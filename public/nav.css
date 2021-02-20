@@ -1,0 +1,160 @@
+* {
+    font-family: 'Noto Sans JP', sans-serif;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    text-decoration: none;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+
+nav {
+    display: flex;
+}
+
+
+#welcome a{
+    display: flex;
+    flex-flow: wrap row;
+    font-size: medium;
+    margin: 0;
+    padding: 0px;
+
+}
+
+li#welcome{
+    font-family: 'Noto Sans JP', sans-serif;
+    margin: 10px 20px 0px 40px;
+}
+.fa-user-check:before{
+    margin-right: 10px;
+    /* font-family: 'Noto Sans JP', sans-serif; */
+}
+
+
+.sidebar {
+    position: fixed;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background: #F2F2F2;
+    transition: all .5s ease;
+    z-index: 10;
+}
+
+.sidebar .mymenu {
+    font-size: 22px;
+    color: #ffffff;
+    line-height: 70px;
+    text-align: center;
+    background: #4465EE;
+    user-select: none;
+    /* position: relative; */
+}
+
+.sidebar ul a {
+    display: block;
+    height: 100%;
+    width: 100%;
+    line-height: 45px;
+    font-size: 20px;
+    color: #4465EE;
+    padding-left: 40px;
+    box-sizing: border-box;
+    /* border-bottom: 1px solid #4465EE;
+border-top: 1px solid rgba(255, 255, 255, .1); */
+    transition: .4s;
+}
+
+ul li:hover a {
+    padding-left: 50px;
+}
+
+.sidebar ul a i {
+    margin-right: 16px;
+}
+
+#check {
+    display: none;
+}
+
+label #btn,
+label #cancel {
+    position: absolute;
+    background: #FFFFFF;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+label #btn {
+    left: 20px;
+    top: 20px;
+    font-size: 35px;
+    color: #4465EE;
+    padding: 6px 12px;
+    transition: all .5s;
+}
+
+label #cancel {
+    z-index: 1111;
+    left: -195px;
+    top: 17px;
+    font-size: 30px;
+    color: #0a5275;
+    padding: 4px 9px;
+    transition: all .5s ease;
+}
+
+#check:checked~.sidebar {
+    left: 0;
+}
+
+#check:checked~label #btn {
+    left: 250px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#check:checked~label #cancel {
+    left: 195px;
+}
+
+#check:checked~section:first-child {
+    margin-left: 250px;
+}
+
+section:first-child {
+    background: url(bg.jpeg) no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 100vh;
+    transition: all .5s;
+}
+
+.menubox button {
+    margin: 5px;
+}
+
+.menubox {
+    margin-left: 40px;
+}
+
+.menubox a {
+    position: relative;
+    /* left: 90px; */
+}
+
+.sidebar li .button-more {
+    padding-left: 130px;
+}
+
+.sidebar li:hover .button-more {
+    padding-left: 140px;
+}

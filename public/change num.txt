@@ -1,0 +1,61 @@
+1. js
+// const { default: nlp } = require("compromise");
+nlp.extend(compromiseNumbers)
+addSpan()
+
+async function addSpan() {
+    const steps = document.querySelectorAll('p')
+    for (let step of steps) {
+        let newStep = ''
+        for (let i = 1; i <= step.innerHTML.length; i++) {
+            if (!isNaN(step.innerHTML.substring(i, i - 1)) && isNaN(step.innerHTML.substring(i, i + 1)) &&
+                (step.innerHTML.substring(i, i + 1).toUpperCase().charCodeAt(0) <= 90 &&
+                    step.innerHTML.substring(i, i + 1).toUpperCase().charCodeAt(0) >= 65) &&
+                step.innerHTML.substring(i, i - 1) != ' ') {
+                newStep += step.innerHTML.substring(i, i - 1) + ' '
+            } else {
+                if (step.innerHTML.substring(i, i+1) == '/' && !isNaN(step.innerHTML.substring(i, i - 1)) && !isNaN(step.innerHTML.substring(i+1, i + 2))){
+                    if (newStep.length == 0){
+                        newStep = '&frac'+ step.innerHTML.substring(i, i-1) + step.innerHTML.substring(i+1,i+2) + ' '
+                        i+=2
+                    }else{
+                        newStep = newStep.substring(0, newStep.length-1) + ' &frac'+ step.innerHTML.substring(i, i-1) + step.innerHTML.substring(i+1,i+2) + ' '
+                        i+=2
+                    }
+                }else{
+                    newStep += step.innerHTML.substring(i, i - 1)
+                }
+            }
+        }
+        newStep = nlp(newStep).numbers().toNumber().all().text()
+        let checknumString = newStep
+        nlp(checknumString).nouns().toSingular()
+        let checknumArray = checknumString.split(' ')
+        
+        console.log(checknumArray)
+        const res = await fetch('/findunit', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ word: checknumArray })
+        })
+        let newnewStep = newStep.split(' ')
+        // console.log(newnewStep)
+        const jsons = await res.json()
+        for (let json in jsons) {
+            if (jsons[json] && !jsons[json-1]) {
+                // console.log(jsons)
+                newnewStep[json-1] = `<span class="quantity">${newnewStep[json-1]}</span>`
+            }
+        }
+        console.log(newnewStep.join(' '))
+        // }
+        // console.log(words)
+    }
+}
+
+
+2. HTML
+    <script src="https://unpkg.com/compromise"></script>
+    <script src="https://unpkg.com/compromise-numbers"></script>

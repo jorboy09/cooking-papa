@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="icon" href="icon.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+        integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
+        crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans&family=Noto+Sans+JP&family=PT+Serif:ital@1&family=Pacifico&display=swap"
+        rel="stylesheet">
+    <!-- font-family: 'Balsamiq Sans', cursive;
+font-family: 'Pacifico', cursive; (Papa font)
+font-family: 'PT Serif', serif; 
+font-family: 'Noto Sans JP', sans-serif; (title fonts) -->
+
+    <link rel="stylesheet" href="profile.css">
+</head>
+
+
+<body>
+    <nav>
+        <input type="checkbox" id="check">
+        <label for="check">
+            <i class="fas fa-bars" id="btn"></i>
+            <i class="fas fa-times" id="cancel"></i>
+        </label>
+        <div class="sidebar">
+            <div class="mymenu">My Menu</div>
+
+            <ul>
+                <li id="favrecipe"><a href="/fav_recipe.html">
+                        <i class="fas fa-hamburger"></i>Favorite Recipe</a>
+                    <div class="menubox">
+                    </div>
+                </li>
+                <li id="mying"><a href="/my_ingredient.html"><i class="fas fa-carrot"></i>My Ingredients</a>
+                    <div class="menubox">
+                    </div>
+                </li>
+
+                <li id="myrecipe"><a href="/my_recipe.html"><i class="fas fa-book-open"></i>My Recipe</a></li>
+                <li id="logout"><a href="/login.html"><i class="fas fa-sign-out-alt"></i>Login</a></li>
+            </ul>
+        </div>
+        <section></section>
+
+    </nav>
+
+
+    <header>
+        <!-- <a href="#" class="hamburger-menu">
+            <i class="fas fa-bars fa-2x"></i>
+        </a> -->
+        <div class="title-search">
+            <div class="search-container">
+                <div id="searchbar" ondrop="drop_handler(event);" ondragover="dragover_handler(event);">
+                    <div class="inSearch"></div>
+                    <input id="editor" name="searchtext" type="text">
+                    <i class="fas fa-search"></i>
+                    <div class="inputSearch"></div>
+                </div>
+                <div class="suggest_ingredients">
+                    <div class='label'>Popular ingredients:</div>
+                </div>
+            </div>
+            <a href="index.html" class="title">
+                <i class="fas fa-cloud-meatball fa-2x"></i>
+                <h2>&ensp;Cooking Papa</h2>
+            </a>
+        </div>
+    </header>
+
+    <section class="profile">
+        <h3>Welcome Back!</h3>
+        <!-- <a href="fav_recipe.html">Favorite Recipe</a> -->
+        <form action='/fav_recipe.html'>
+            <input type="submit" value="Favorite Recipe">
+        </form>
+        <!-- <a href="my_ingredients.html">My Ingredients</a> -->
+        <form action='/my_ingredient.html'>
+            <input type="submit" value="My Ingredients">
+        </form>
+        <!-- <a href="my_recipe.html">My Recipe</a> -->
+        <form action='/my_recipe.html'>
+            <input type="submit" value="My Recipe">
+        </form>
+        <!-- <a href="change_password.html">Change Password</a> -->
+        <form action='/change_password.html'>
+            <input type="submit" value="Change Password">
+        </form>
+        <!-- <a href="logout.html">Logout</a> -->
+        <form id="logout-form">
+            <input type="submit" value="Logout">
+        </form>
+
+    </section>
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.12/lib/draggable.bundle.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.12/lib/draggable.bundle.js"></script>
+    <script src="https://kit.fontawesome.com/49701cd46f.js" crossorigin="anonymous"></script>
+    <script src="profile.js"></script>
+
+</body>
+
+</html>

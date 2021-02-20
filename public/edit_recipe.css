@@ -1,0 +1,835 @@
+*{
+    font-family: 'Noto Sans JP', sans-serif;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    text-decoration: none;
+}
+
+#welcome a{
+    display: flex;
+    flex-flow: wrap row;
+    font-size: medium;
+    margin: 0;
+    padding: 0px;
+
+}
+.logo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    position: fixed;
+    background: white;
+    z-index: 5;
+    padding-top: 20px;
+}
+
+.title > h2 {
+    font-family: 'Pacifico', cursive;
+    color: #34CBB6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo .title{
+    border: none;
+}
+
+.title {
+    border: 3px solid #34CBB6;
+    border-radius: 5px;
+    width: 300px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Noto Sans JP', sans-serif;
+    padding: 20px;
+}
+
+.fas {
+    color: #34CBB6;
+    margin-bottom: 5px;
+}
+.fa-trash-alt{
+    color: #E86B75;
+}
+
+.title:first-child {
+    margin: 15px;
+    padding: 25px;
+}
+/* --------------------------------- */
+/* My Menu */
+
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+
+nav {
+    display: flex;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background: #f7f9f9;
+    opacity: 90%;
+    transition: all .5s ease;
+    z-index: 20;
+}
+
+.sidebar .mymenu {
+    font-size: 22px;
+    color: #ffffff;
+    line-height: 70px;
+    text-align: center;
+    background: #34cbb6;
+    user-select: none;
+    /* position: relative; */
+}
+
+.sidebar ul a {
+    display: block;
+    height: 100%;
+    width: 100%;
+    line-height: 45px;
+    font-size: 20px;
+    color: #34cbb6;
+    padding-left: 40px;
+    box-sizing: border-box;
+    /* border-bottom: 1px solid #34cbb6;
+border-top: 1px solid rgba(255, 255, 255, .1); */
+    transition: .4s;
+}
+
+ul li:hover a {
+    padding-left: 50px;
+}
+
+.sidebar ul a i {
+    margin-right: 16px;
+}
+
+#check {
+    display: none;
+}
+
+label #btn,
+label #cancel {
+    position: absolute;
+    background: #FFFFFF;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+label #btn {
+    left: 20px;
+    top: 30px;
+    font-size: 35px;
+    color: #34cbb6;
+    padding: 6px 12px;
+    transition: all .5s;
+}
+
+label #cancel {
+    z-index: 1111;
+    left: -195px;
+    top: 17px;
+    font-size: 30px;
+    color: #0a5275;
+    padding: 4px 9px;
+    transition: all .5s ease;
+}
+
+#check:checked~.sidebar {
+    left: 0;
+}
+
+#check:checked~label #btn {
+    left: 250px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#check:checked~label #cancel {
+    left: 195px;
+}
+
+#check:checked~section:first-child {
+    margin-left: 250px;
+}
+
+section:first-child {
+    background: url(bg.jpeg) no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 100vh;
+    transition: all .5s;
+}
+
+.menubox button {
+    margin: 5px;
+}
+
+.menubox {
+    margin-left: 40px;
+}
+
+.menubox a {
+    position: relative;
+    /* left: 90px; */
+}
+
+.sidebar li .button-more {
+    padding-left: 130px;
+}
+
+.sidebar li:hover .button-more {
+    padding-left: 140px;
+}
+
+
+/* ---------------------------- */
+
+/* Special */
+.top {
+    width: 50px;
+    height: 50px;
+    border: solid 3px #34cbb6;
+    border-radius: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Header */
+a:hover {
+    text-decoration:none;
+}
+
+
+nav{
+    background: #ffffff;
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    position: fixed;
+    top: 0;
+    z-index: 9;
+}
+
+nav > label{
+    display: contents;
+}
+
+/* Upload Recipe */
+article h2{
+    font-family: 'Noto Sans JP', sans-serif;
+     display: flex;
+    justify-content: center;
+    color: #34cbb6;
+    /* margin: 20px; */
+}
+article .upload-title{
+    display: flex;
+    /* width: 450px; */
+    justify-content: center;
+    font-family: 'Balsamiq Sans', cursive;
+    background-color: #34cbb6;
+    color: #ffffff;
+    border: 1px solid #34cbb6;
+    border-radius: 5px;
+    margin: 20px;
+}
+
+article h3{
+    padding: 5px;
+}
+article{
+    position: relative;
+    top: 100px;
+    /* margin: 20px; */
+}
+
+.upload-top{
+    display: flex;
+    justify-content: space-around;
+    margin: 20px;
+    border: solid;
+    border-radius: 10px;
+    padding: 10px;
+    /* background-color: #fcf8ea; */
+}
+
+.dishname{
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+}
+
+input#dishname{
+    border: solid 1px;
+    border-radius: 5px;
+    /* color: #34cbb6; */
+}
+
+.dishname label{
+    margin: 0 10px;
+}
+
+.image-upload{
+    width: 300px;
+    height: 200px;
+    border: solid 2px #000000;
+    border-radius: 3px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-upload img{
+    max-width: 100%;
+    height: 100%;
+}
+/* 
+img ~ i{
+    position: absolute;
+
+
+} */
+
+/* Image Upload Preview */
+#output_image {
+    max-width: 300px;
+}
+
+/* .image-upload:hover{
+    background: #000000;
+    opacity: 70%;
+} */
+
+/* .image-upload>input {
+    display: none;
+} */
+/* .image-upload label{
+    position: relative;
+} */
+
+/* label > .fa-plus-circle{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+} */
+
+/* .image-upload:hover h3{
+    visibility: hidden;
+}
+
+.image-upload:hover .fa-plus-circle{
+    visibility: visible;
+    color: #ffffff;
+    opacity: 70%;
+} */
+
+
+.image-upload {
+    width: 300px;
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+    /* background: ; */
+}
+
+.image-upload input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    opacity: 0.0;
+    filter: alpha(opacity=0);
+
+    height: 200px;
+    /* background-color: #ffffff; */
+}
+
+.stepsimg{
+    width: 230px;
+    height: 150px;
+    background-color: #ffffff;
+}
+
+.upload-plus{
+    display: flex;
+    justify-content: center;
+}
+
+textarea{
+    width: 500px;
+    height: 200px;
+    display: flex;
+}
+
+
+/* Searchbar and ingredients */
+
+#searchbar {
+    position: relative;
+    height: fit-content;
+    border: solid 3px #34cbb6;
+    border-radius: 15px;
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    margin: 20px;
+    padding-right: 50px;
+    flex-wrap: wrap;
+}
+
+.fa-search{
+    padding: 5px;
+    font-size: 25px;
+    position: absolute;
+    right: 15px;
+    margin: 0;
+    color: #E86B75;
+}
+.inSearch {
+    display: flex;
+    user-select: none;
+    flex-flow: wrap column;
+
+}
+
+.ingredientBox{
+    display: flex;
+    flex-flow: nowrap;
+    /* margin: 5px; */
+}
+#quantity{
+    /* width: 200px;
+    height: 40px; */
+    margin: 10px;
+}
+
+.ingredientBox .ingredient{
+    margin: 10px;
+}
+.ingredient {
+    width: fit-content;
+    height: fit-content;
+    padding: 2px 12px;
+    border: solid 2px #f09da4;
+    background: #f09da4;
+    color: #ffffff;
+    /* margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 7px; */
+    margin: 7px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+    border-radius: 10px;
+    position: relative;
+    font-size: large;
+    box-shadow: 1px 2px 5px lightgray;
+
+}
+
+.ingredient .fa-times-circle{
+    position: absolute;
+    right: 3px;
+    top: 5px;
+    font-size: 10px;
+    visibility: hidden;
+}
+
+.ingredient:hover .fa-times-circle{
+    visibility: visible;
+}
+
+.ingredient:hover{
+    cursor: pointer;
+}
+
+.ingredient>img{
+    width: 20px;
+    height: 20px;
+}
+
+input[type="text" i]{
+    border: none;
+    width: 100%;
+    background-color: transparent;
+    font-size: 25px;
+   
+}
+
+input[type="text" i]:focus{
+    outline: none;
+    
+}
+
+.fa-search{
+    padding: 5px;
+    font-size: 25px;
+    position: absolute;
+    right: 15px;
+    margin: 0;
+}
+
+.fa-search:hover{
+    cursor: pointer;
+}
+
+label{
+    display: block;
+    margin: 0;
+}
+
+.label{
+    margin-right: 20px;
+}
+
+.suggest_ingredients{
+    display: flex;
+    flex-flow: wrap row;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    margin-bottom: 80px;
+}
+
+.inputSearch {
+    position: absolute;
+    background-color: white;
+    z-index: 99;
+    font-size: 20px;
+    top: 100%;
+    left: 0;
+    right: 0;
+}
+
+.ingre_result{
+    border-top: solid rgb(207, 207, 207) 1px;
+    padding: 10px 10px;
+}
+
+.ingre_result:hover{
+    background-color: rgb(207, 207, 207);
+}
+
+.ingre_result:last-child{
+    border-bottom: solid black 1px;
+}
+
+/* Recipe */
+/* button-end */
+
+.individual-recipe {
+    background: #fcf8ea;
+    margin-top: 50px;
+    font-size: 20px;
+    border: solid;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    padding: 15px;
+    display: flex;
+    flex-flow: wrap row;
+    justify-content: space-around;
+    /* align-items: center; */
+    position: relative;
+    margin: 15px;
+}
+
+.recipe-image{
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    margin: 15px;
+
+}
+
+.individual-recipe p{
+    margin: 10px;
+}
+
+.recipe-remove-button{
+    position: absolute;
+    top: -15px;
+    right: -10px;
+    background-color: #ffffff;
+    border:solid;
+    border-radius: 10px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.recipe-remove-button:hover{
+    cursor: pointer;
+}
+
+#upload-button{
+    background-color: #f09da4;
+    color: #ffffff;
+    border: solid 2px #f09da4;
+    border-radius: 10px;
+    padding: 5px 10px;
+    margin: 10px 10px 30px 10px;
+}
+
+/* Responsiveness */
+@media (max-width: 1720px) {
+    .title-search {
+        margin-left: 350px;
+    }
+}
+
+@media (max-width: 1460px) {
+    .title-search {
+        margin-left: 250px;
+    }
+}
+
+@media (max-width: 1420px) {
+    .title-search {
+        margin-left: 170px;
+    }
+}
+
+@media (max-width: 1279px) {
+    nav{
+        flex-direction: column;
+    }
+
+    .title-search {
+        margin-left: 0;
+        flex-direction: column-reverse;
+    }
+
+    /* #searchbar {
+        width: 980px;
+    } */
+}
+
+@media (max-width: 991px) {
+    /* #searchbar {
+        width: 750px;
+    } */
+}
+
+@media (max-width: 767px) {
+    /* .search-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    #searchbar {
+        width: 500px;
+    } */
+    
+}
+
+@media (max-width: 575px) {
+    html{
+        width: 100%;
+    }
+
+    /* .logo{
+        left: 20px;
+    } */
+    /* #searchbar {
+        width: 350px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    } */
+   
+}
+
+@media only screen and (min-width: 481px) and  (max-width: 767px){
+    html{
+        width: 100%;
+    }
+    
+    .logo{
+        display: flex;
+        flex-wrap: nowrap;
+    }
+    .containter{
+        padding: 0;
+    }
+
+    #searchbar {
+        width: 400px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .suggest_ingredients {
+        width: 500px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .wrapper{
+        margin: 0;
+    }
+
+    .slogan h2{
+        font-size: 15px;
+        line-height: 170%;
+        margin: 10px 0;
+    }
+
+    .fa-2x {
+        font-size: 1em;
+    }
+
+    textarea{
+        width: auto;
+        border: solid;
+        border-radius: 5px;
+    }
+    .upload-top{
+        display: flex;
+        flex-flow: wrap column;
+        justify-content: center;
+        align-items: center;
+        margin: 10px;
+    }
+
+
+
+}
+
+
+/*-------------------------Mobile----------------------------------*/
+
+
+@media only screen and (max-width: 480px) {
+    .fa-cloud-meatball{
+        margin-left: 10px;
+    }
+
+    .logo{
+        display: block;
+
+    }
+   .sidebar{
+        left: -100%;
+        width: 100%;
+   }
+
+    .wrapper{
+        max-width: 100%;
+    }
+
+    .container{
+        margin: 0;
+        padding: 0;
+    }
+    .banner {
+        margin: 100px 0 20px;
+    }
+
+    #check:checked~label #cancel {
+        left: 100%;
+        margin-left: 10px;
+        margin-bottom: 5px;
+    }
+    label #btn{
+        font-size: 30px;
+        left: 3px;
+        top: 35px;
+    }
+
+    .slogan h2{
+        font-size: 15px;
+        line-height: 170%;
+        margin: 10px 0;
+    }
+
+    #searchbar {
+        width: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .suggest_ingredients {
+        width: 300px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px;
+    }
+
+    /* Home 2 */
+    .home-2 main,
+    .ingredients-section{
+        max-width: 100%;
+    }
+    .wrapper{
+        margin: 0;
+        max-width: 100%;
+    }
+
+    .home-2 .top {
+        position: absolute;
+        right: 25px;
+        bottom: 50px;
+    }
+
+    .fas {
+        font-size: 1em;
+    }
+
+    textarea{
+        width: auto;
+    }
+    .upload-top{
+        display: flex;
+        flex-flow: wrap column;
+        justify-content: center;
+        align-items: center;
+        margin: 10px;
+    }
+
+}
+
+@media only screen and (max-width: 280px) {
+    /* .upload-top, */
+    .dishname{
+        display: block;
+    }
+    .image-upload {
+        width: 100%
+    }
+}
+/* Responsiveness - end */

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Recipe</title>
+    <link rel="icon" href="icon.png" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans&family=Noto+Sans+JP&family=PT+Serif:ital@1&family=Pacifico&display=swap"
+        rel="stylesheet">
+    <!-- font-family: 'Balsamiq Sans', cursive;
+font-family: 'Pacifico', cursive; (Papa font)
+font-family: 'PT Serif', serif; 
+font-family: 'Noto Sans JP', sans-serif; (title fonts) -->
+
+    <link rel="stylesheet" href="upload_recipe.css">
+</head>
+
+<body>
+    <!-- CookingPapa Title and Logo -->
+    <div class="logo">
+        <a href="/index.html" class="title">
+            <i class="fas fa-cloud-meatball fa-2x"></i>
+            <h2>&ensp;Cooking Papa</h2>
+        </a>
+    </div>
+    <!-- Side bar My Menu -->
+    <nav>
+        <input type="checkbox" id="check">
+        <label for="check">
+            <i class="fas fa-bars" id="btn"></i>
+            <i class="fas fa-times" id="cancel"></i>
+        </label>
+        <div class="sidebar">
+            <div class="mymenu">My Menu</div>
+
+            <ul>
+                <li id="favrecipe"><a href="/fav_recipe.html">
+                        <i class="fas fa-hamburger"></i>Favorite Recipe</a>
+                    <div class="menubox">
+                    </div>
+                </li>
+                <li id="mying"><a href="/my_ingredient.html"><i class="fas fa-carrot"></i>My Ingredients</a>
+                    <div class="menubox">
+                    </div>
+                </li>
+
+                <li id="myrecipe"><a href="/my_recipe.html"><i class="fas fa-book-open"></i>My Recipe</a></li>
+                <li id="logout"><a href="/login.html"><i class="fas fa-sign-out-alt"></i>Login</a></li>
+            </ul>
+        </div>
+        <section></section>
+
+    </nav>
+
+    <article class="upload">
+        <h2>Recipe Upload</h2>
+        <h3 class="upload-title">Dish and Ingredients</h3>
+        <div class="uploadContainer">
+            <form action="/upload_recipe" id="uploadform" enctype="multipart/form-data" method="POST">
+                <div class="upload-top">
+                    <div class="image-upload">
+                        <!-- <i class="fas fa-plus-circle fa-2x"></i> -->
+                        <input type="file" name="photo" accept=".jpg, .jpeg, .bmp, .gif, .png" onchange="previewFile()" required />
+                        <img src="">
+                        <i class="fas fa-plus-circle fa-2x"></i>
+                    </div>
+
+                    <div class="upload-right">
+                        <div class="dishname">
+                            <label for="dishname">Dish Name:</label>
+                            <input type="input" id="dishname" name="dishname">
+                        </div>
+
+                        <div id="searchbar">
+                            <input id="editor" name="searchtext" type="text">
+                            <i class="fas fa-search"></i>
+                            <div class="inputSearch"></div>
+                        </div>
+                        <div class="inSearch">
+                            <div class="ingredientBox">
+                                <!-- <div class="ingredient" data-ingre_id='steak' draggable="true"
+                                    ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
+                                    <i class="far fa-times-circle"></i>Steak
+                                </div> -->
+                                <!-- <input type="input" name="quantity" placeholder="quantity"> -->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <h3 class="upload-title">Steps</h3>
+                <div class="steps drag-sort-enable">
+                    <div class="individual-recipe">
+                        <div class="recipe-image">
+                            <!-- <p>1.</p> -->
+                            <div class="image-upload" id="stepsimg">
+                                <input type="file" name="photo" accept=".jpg, .jpeg, .bmp, .gif, .png" onchange="previewFile()" />
+                                <img src="">
+                                <i class="fas fa-plus-circle fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="step_ingre" ondrop="drop_handler(event);" ondragover="dragover_handler(event);">Drag
+                            ingredients used in this step.
+                            <!-- <div class="ingredient" data-ingre_id='steak' draggable="true"
+                                ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
+                                <i class="far fa-times-circle"></i>Steak
+                            </div> -->
+
+                        </div>
+                        <div class="recipe-info">
+                            <textarea name="content"></textarea>
+                        </div>
+                        <div class="recipe-remove-button">
+                            <i class="fas fa-trash-alt"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="upload-plus" id="pluslogo">
+                    <i class="fas fa-plus-circle fa-2x"></i>
+                </div>
+                <div class="upload-plus">
+                    <input type="submit" value="Upload" id="upload-button">
+                </div>
+            </form>
+        </div>
+    </article>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.12/lib/draggable.bundle.js"></script>
+    <script src="https://kit.fontawesome.com/49701cd46f.js" crossorigin="anonymous"></script>
+
+    <script src="upload_recipe.js"></script>
+</body>
+
+</html>

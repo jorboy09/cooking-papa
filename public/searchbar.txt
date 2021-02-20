@@ -1,0 +1,196 @@
+1. HTML
+
+<div id="searchbar" ondrop="drop_handler(event);" ondragover="dragover_handler(event);">
+    <div class="inSearch"></div>
+    <input id="editor" name="searchtext" type="text">
+    <i class="fas fa-search"></i>
+    <div class="inputSearch"></div>
+</div>
+<div class="suggest_ingredients">
+    <div class='label' >Popular ingredients:</div>
+    <div class="ingredient" data-ingre_id='onion' draggable="true" ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
+        <img src="icon.png">
+        <i class="far fa-times-circle"></i>Onion
+    </div>
+    <div class="ingredient" data-ingre_id='steak' draggable="true" ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
+        <i class="far fa-times-circle"></i>Steak
+    </div>
+    <div class="ingredient" data-ingre_id='pork' draggable="true" ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
+        <i class="far fa-times-circle"></i>Pork
+    </div>
+    <div class="ingredient" data-ingre_id='tomato' draggable="true" ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
+        <i class="far fa-times-circle"></i>Tomato
+    </div>
+</div>
+
+
+2. CSS
+
+#searchbar {
+    position: relative;
+    height: fit-content;
+    border: solid 1px #000000;
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-right: 50px;
+    flex-wrap: wrap;
+}
+.inSearch {
+    display: flex;
+    user-select: none;
+    flex-flow: wrap;
+}
+
+.ingredient {
+    width: fit-content;
+    height: fit-content;
+    padding: 2px 12px;
+    border: solid 1px #000000;
+    margin-right: 5px;
+    margin-bottom: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.ingredient .fa-times-circle{
+    position: absolute;
+    right: 3px;
+    top: 5px;
+    font-size: 10px;
+    visibility: hidden;
+}
+
+.inSearch .ingredient:hover .fa-times-circle{
+    visibility: visible;
+}
+
+.ingredient:hover{
+    cursor: pointer;
+}
+
+.ingredient>img{
+    width: 20px;
+    height: 20px;
+}
+
+input[type="text" i]{
+    border: none;
+    width: 100%;
+    background-color: transparent;
+    font-size: 25px;
+}
+
+input[type="text" i]:focus{
+    outline: none;
+}
+
+.fa-search{
+    padding: 5px;
+    font-size: 25px;
+    position: absolute;
+    right: 15px;
+}
+
+.fa-search:hover{
+    cursor: pointer;
+}
+
+.label{
+    margin-right: 20px;
+}
+
+.suggest_ingredients{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    margin-bottom: 80px;
+}
+
+.inputSearch {
+    position: absolute;
+    background-color: white;
+    z-index: 99;
+    font-size: 20px;
+    top: 100%;
+    left: 0;
+    right: 0;
+}
+
+.ingre_result{
+    border-top: solid rgb(207, 207, 207) 1px;
+    padding: 10px 10px;
+}
+
+.ingre_result:hover{
+    background-color: rgb(207, 207, 207);
+}
+
+.ingre_result:last-child{
+    border-bottom: solid black 1px;
+}
+
+3. Javascript
+function dragstart_handler(event) {
+    // console.log("dragStart");
+    // Change the source element's background color to signify drag has started
+    // ev.currentTarget.style.border = "dashed";
+    // Add the id of the drag source element to the drag data payload so
+    // it is available when the drop event is fired
+    event.dataTransfer.setData("class", event.target.className.split(' ')[0]);
+    event.dataTransfer.setData('ingre_id', event.target.dataset.ingre_id)
+    // Tell the browser both copy and move are possible
+    event.effectAllowed = "copyMove";
+}
+function dragover_handler(event) {
+    // console.log("dragOver");
+    // Change the target element's border to signify a drag over event
+    // has occurred
+    // ev.currentTarget.style.background = "lightblue";
+    event.preventDefault();
+}
+function drop_handler(event) {
+    // console.log("Drop");
+    event.preventDefault();
+    // Get the id of drag source element (that was added to the drag data
+    // payload by the dragstart event handler)
+    let oneclass = event.dataTransfer.getData("class");
+    let ingre_id = event.dataTransfer.getData("ingre_id")
+    // Copy the element if the source and destination ids are both "copy"
+    if (oneclass == "ingredient" && document.querySelector(`.inSearch [data-ingre_id='${ingre_id}'`) == null &&
+        (event.target.id == "searchbar" || event.target.id == "editor" ||
+            event.target.className.split(' ')[0] == 'inSearch' ||
+            event.target.className.split(' ')[0] == 'ingredient')) {
+        let nodeCopy = document.querySelector(`[data-ingre_id='${ingre_id}'`).cloneNode(true);
+        nodeCopy.draggable = false
+        document.querySelector('.inSearch').appendChild(nodeCopy);
+    }
+
+    let crosses = document.querySelectorAll('#searchbar .inSearch .ingredient .fa-times-circle')
+    for (let cross of crosses) {
+        cross.addEventListener('click', (event) => {
+            console.log('clicked')
+            event.currentTarget.parentNode.remove()
+        })
+    }
+}
+function dragend_handler(event) {
+    // console.log("dragEnd");
+    // Restore source's border
+    //  event.target.style.border = "solid black";
+    // Remove all of the drag data
+    event.dataTransfer.clearData();
+}
+
+const searchtext = document.querySelector('#editor')
+searchtext.addEventListener('keydown', (event) => {
+    if (event.keyCode == 8 && searchtext.value == '') {
+        document.querySelector('.inSearch>div:last-child').remove();
+    }
+})

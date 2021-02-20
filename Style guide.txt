@@ -1,0 +1,26 @@
+Home 1:
+
+Home 2:
+
+Home 3:
+
+Search:
+
+Ingredient info:
+
+Recipe:
+    servings: min=1 max=20
+
+Fav recipe:
+
+My recipe:
+
+Upload recipe:
+
+Login:
+    username
+    password
+
+Register:
+
+Change pw:

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favorite Recipe</title>
+    <link rel="icon" href="icon.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+        integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
+        crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Copy Google font -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans&family=Noto+Sans+JP&family=PT+Serif:ital@1&family=Pacifico&display=swap"
+        rel="stylesheet">
+    <!-- font-family: 'Balsamiq Sans', cursive;
+    font-family: 'Pacifico', cursive; (Papa font)
+    font-family: 'PT Serif', serif; 
+    font-family: 'Noto Sans JP', sans-serif; (title fonts) -->
+    <link rel="stylesheet" href="fav_recipe.css">
+</head>
+
+<body>
+    <nav>
+        <input type="checkbox" id="check">
+        <label for="check">
+            <i class="fas fa-bars" id="btn"></i>
+            <i class="fas fa-times" id="cancel"></i>
+        </label>
+        <div class="sidebar">
+            <div class="mymenu">My Menu</div>
+
+            <ul>
+                <li id="favrecipe"><a href="/fav_recipe.html">
+                        <i class="fas fa-hamburger"></i>Favorite Recipe</a>
+                    <div class="menubox">
+                    </div>
+                </li>
+                <li id="mying"><a href="/my_ingredient.html"><i class="fas fa-carrot"></i>My Ingredients</a>
+                    <div class="menubox">
+                    </div>
+                </li>
+
+                <li id="myrecipe"><a href="/my_recipe.html"><i class="fas fa-book-open"></i>My Recipe</a></li>
+                <li id="logout"><a href="/login.html"><i class="fas fa-sign-out-alt"></i>Login</a></li>
+            </ul>
+        </div>
+        <section></section>
+
+    </nav>
+    <header>
+        <div class="title-search">
+            <div class="search-container">
+                <div id="searchbar" ondrop="drop_handler(event);" ondragover="dragover_handler(event);">
+                    <div class="inSearch"></div>
+                    <input id="editor" name="searchtext" type="text">
+                    <i class="fas fa-search"></i>
+                    <div class="inputSearch"></div>
+                </div>
+                <div class="suggest_ingredients">
+                    <div class='label'>Popular ingredients:</div>
+                </div>
+            </div>
+            <a href="index.html" class="title">
+                <i class="fas fa-cloud-meatball fa-2x"></i>
+                <h2>&ensp;Cooking Papa</h2>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <div>
+            <div class="page-title">
+                <div>
+                    <h1>Favorite Recipe</h1>
+                </div>
+            </div>
+            <div class="recipe-container">
+
+                <!-- <div class="individual-recipe">
+                    <div class="recipe-image">
+                        <img src="html_images/steak.jpg">
+                    </div>
+                    <div class="recipe-info">
+                        <div class="recipe-title">
+                            <h3>Dish Name</h3>
+                        </div>
+                        <div class="recipe-ingredients">
+                            <div class="ingredients-title">
+                                Ingredients:
+                            </div>
+                            <div class="ingredients-list">
+                                <div class="individual-ingredient container">
+                                    <div class="ingredients-indicator"><i class="far fa-question-circle"></i></div>
+                                    <a class="ingredient-info" href="#popup-1"><i class="fas fa-info-circle"></i></a>
+                                    <div class="ingredient" data-ingre_id='onion' draggable="true" ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
+                                        <img src="icon.png">
+                                        <i class="far fa-times-circle"></i>Onion
+                                    </div>
+                                    <div class="ingredient-quantites">100g</div>
+                                </div>
+                                <div class="individual-ingredient container">
+                                    <div class="ingredients-indicator"><i class="far fa-question-circle"></i></div>
+                                    <a class="ingredient-info" href="#popup-2"><i class="fas fa-info-circle"></i></a>
+                                    <div class="ingredient" data-ingre_id='tomato' draggable="true" ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
+                                        <img src="icon.png">
+                                        <i class="far fa-times-circle"></i>Tomato
+                                    </div>
+                                    <div class="ingredient-quantites">100g</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="recipe-remove-button">
+                        <i class="fas fa-trash-alt"></i>
+                    </div>
+                </div>
+
+                <div class="individual-recipe">
+                    <div class="recipe-image">
+                        <img src="html_images/steak.jpg">
+                    </div>
+                    <div class="recipe-info">
+                        <div class="recipe-title">
+                            <h3>Dish Name</h3>
+                        </div>
+                        <div class="recipe-ingredients">
+                            <div class="ingredients-title">
+                                Ingredients:
+                            </div>
+                            <div class="ingredients-list">
+                                <div class="individual-ingredient container">
+                                    <div class="ingredients-indicator"><i class="far fa-question-circle"></i></div>
+                                    <a class="ingredient-info" href="#popup-1"><i class="fas fa-info-circle"></i></a>
+                                    <div class="ingredient" data-ingre_id='onion' draggable="true" ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
+                                        <img src="icon.png">
+                                        <i class="far fa-times-circle"></i>Onion
+                                    </div>
+                                    <div class="ingredient-quantites">100g</div>
+                                </div>
+                                <div class="individual-ingredient container">
+                                    <div class="ingredients-indicator"><i class="far fa-question-circle"></i></div>
+                                    <a class="ingredient-info" href="#popup-2"><i class="fas fa-info-circle"></i></a>
+                                    <div class="ingredient" data-ingre_id='tomato' draggable="true" ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
+                                        <img src="icon.png">
+                                        <i class="far fa-times-circle"></i>Tomato
+                                    </div>
+                                    <div class="ingredient-quantites">100g</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="recipe-remove-button">
+                        <i class="fas fa-trash-alt"></i>
+                    </div>
+                </div> -->
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Popup -->
+    <div id="ingredient-popup" class="ingredient-popup">
+        <div id="popup-1" class="overlay">
+            <div class="popup">
+                <div class="image-ingredient-name">
+                    <img class="popup-image" src="">
+                    <h2 class='ingredient-name'> </h2>
+                </div>
+                <a class="close" href="#index">&times;</a>
+                <div class="content">
+
+                </div>
+                <div class="bookmark">
+                    <i class="far fa-bookmark"></i>
+                </div>
+            </div>
+        </div>
+        <div id="index" class="overlay">
+            <div class="popup">
+            </div>
+        </div>
+    </div>
+    <!-- Popup end -->
+    <script src="https://kit.fontawesome.com/49701cd46f.js" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.12/lib/draggable.bundle.js"></script>
+    <script src="fav_recipe.js"></script>
+</body>
+
+</html>
