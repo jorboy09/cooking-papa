@@ -17,7 +17,6 @@ let login = false
 
         const json = await res.json();
         const recipeInfo = json[0];
-        console.log(recipeInfo)
         if (recipeInfo === undefined) {
             document.querySelector('main').innerHTML = 'No recipe information.'
             return;
@@ -39,7 +38,6 @@ let login = false
             }
 
         })
-        console.log(recipeIngresReduce)
         // insert info
         document.querySelector('.recipe-title').innerText = recipeInfo.recipe_id.recipe_name_eng
         document.querySelector('.creater-name').innerText = `(Creater: ${recipeInfo.recipe_id.username})`
@@ -318,7 +316,6 @@ function drop_handler(event) {
     let crosses = document.querySelectorAll('#searchbar .inSearch .ingredient .fa-times-circle')
     for (let cross of crosses) {
         cross.addEventListener('click', (event) => {
-            console.log('clicked')
             event.currentTarget.parentNode.remove()
         })
     }
@@ -347,14 +344,12 @@ document.querySelector('#editor').addEventListener('input', async () => {
         })
         const jsons = await res.json()
         for (let json of jsons) {
-            // console.log(json)
             document.querySelector('.inputSearch').innerHTML += `<div class="ingre_result" data-ingre_id='${json.id}'>${json.name_eng}</div>`
         }
     }
     const inputresults = document.querySelectorAll('.inputSearch .ingre_result')
     for (let inputresult of inputresults) {
         inputresult.addEventListener('click', async (event) => {
-            // console.log('click')
             if (document.querySelector(`.inSearch [data-ingre_id='${event.currentTarget.dataset.ingre_id}'`) == null) {
                 const res = await fetch('/findingre', {
                     method: 'post',
@@ -364,7 +359,6 @@ document.querySelector('#editor').addEventListener('input', async () => {
                     body: JSON.stringify({ ingre_id: [event.currentTarget.dataset.ingre_id] })
                 })
                 const jsons = await res.json()
-                // console.log(jsons)
                 for (let json of jsons) {
                     document.querySelector('.inSearch').innerHTML +=
                         `<div class="ingredient" data-ingre_id='${json.id}' draggable="true" ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
@@ -377,7 +371,6 @@ document.querySelector('#editor').addEventListener('input', async () => {
             let crosses = document.querySelectorAll('#searchbar .inSearch .ingredient .fa-times-circle')
             for (let cross of crosses) {
                 cross.addEventListener('click', (event) => {
-                    // console.log('clicked')
                     event.currentTarget.parentNode.remove()
                 })
             }
@@ -426,8 +419,6 @@ async function addSpan() {
         let checknumString = newStep
         nlp(checknumString).nouns().toSingular()
         let checknumArray = checknumString.split(' ')
-
-        console.log(checknumArray)
         const res = await fetch('/findunit', {
             method: 'post',
             headers: {
@@ -436,19 +427,13 @@ async function addSpan() {
             body: JSON.stringify({ word: checknumArray })
         })
         let newnewStep = newStep.split(' ')
-        // console.log(newnewStep)
         const jsons = await res.json()
         for (let json in jsons) {
             if (jsons[json] && !jsons[json - 1] && (!isNaN(newnewStep[json - 1]) || newnewStep[json - 1].includes('&frasl;'))) {
-                // console.log(jsons)
                 newnewStep[json - 1] = `<span class="quantity">${newnewStep[json - 1]}</span>`
             }
         }
-        console.log(newnewStep.join(' '))
         step.innerHTML = newnewStep.join(' ');
-
-        // }
-        // console.log(words)
     }
 }
 
@@ -519,7 +504,6 @@ servings.addEventListener('change', () => {
         const json = await res.json()
         if (json.login) {
             login = true
-            console.log(json.user_ingres)
             let recipes = []
             let ingres = []
             if (json.user_reci[0].id != null){
@@ -530,7 +514,6 @@ servings.addEventListener('change', () => {
                     }            
                 }while(ingres.length != 4 && recipes.length != json.user_reci.length)
             }
-            console.log(json.user_reci.length)
             if (json.user_ingres[0].id != null){
                 do{
                     let num = Math.floor(Math.random()* json.user_ingres.length)

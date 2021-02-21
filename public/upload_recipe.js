@@ -35,14 +35,12 @@ function drop_handler(event) {
     let crosses = document.querySelectorAll('.inSearch .ingredient .fa-times-circle')
     for (let cross of crosses) {
         cross.addEventListener('click', (event) => {
-            console.log('clicked')
             event.currentTarget.parentNode.parentNode.remove()
         })
     }
     let crossess = document.querySelectorAll('.step_ingre .ingredient .fa-times-circle')
     for (let cross of crossess) {
         cross.addEventListener('click', (event) => {
-            console.log('clicked')
             event.currentTarget.parentNode.remove()
         })
     }
@@ -71,14 +69,12 @@ document.querySelector('#editor').addEventListener('input', async () => {
         })
         const jsons = await res.json()
         for (let json of jsons) {
-            // console.log(json)
             document.querySelector('.inputSearch').innerHTML += `<div class="ingre_result" data-ingre_id='${json.id}'>${json.name_eng}</div>`
         }
     }
     const inputresults = document.querySelectorAll('.inputSearch .ingre_result')
     for (let inputresult of inputresults) {
         inputresult.addEventListener('click', async (event) => {
-            // console.log('click')
             if (document.querySelector(`.inSearch [data-ingre_id='${event.currentTarget.dataset.ingre_id}'`) == null) {
                 const res = await fetch('/findingre', {
                     method: 'post',
@@ -88,7 +84,6 @@ document.querySelector('#editor').addEventListener('input', async () => {
                     body: JSON.stringify({ ingre_id: [event.currentTarget.dataset.ingre_id] })
                 })
                 const jsons = await res.json()
-                // console.log(jsons)
                 for (let json of jsons) {
                     document.querySelector('.inSearch').innerHTML +=
                         `<div class="ingredientBox"><div class="ingredient" data-ingre_id='${json.id}' draggable="true" ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
@@ -101,7 +96,6 @@ document.querySelector('#editor').addEventListener('input', async () => {
             let crosses = document.querySelectorAll('#searchbar .inSearch .ingredient .fa-times-circle')
             for (let cross of crosses) {
                 cross.addEventListener('click', (event) => {
-                    // console.log('clicked')
                     event.currentTarget.parentNode.remove()
                 })
             }
@@ -109,21 +103,12 @@ document.querySelector('#editor').addEventListener('input', async () => {
     }
 })
 
-
-// const params = new URLSearchParams(location.search)
-
-// if (params.get('login') == 'true') {
-//     document.querySelector('.sidebar>ul').innerHTML = `<li id="welcome"><a href="#"><i class="fas fa-user-check"></i><span>Welcome Back!</span> Login / Username</a></li>` + document.querySelector('.sidebar>ul').innerHTML
-//     document.querySelector('.sidebar>ul>li:last-child').innerHTML = (`<li id="logout"><a href="#"><i class="fas fa-sign-out-alt"></i>Logout</a></li>`)
-// }
-
 //Image Upload Preview
 function previewFile() {
     const previews = document.querySelectorAll('input + img');
 
     const files = document.querySelectorAll('input[type=file]');
     for (let i = 0; i < files.length; i++) {
-        console.log(files[i])
         let validateFiles = Validate(files[i])
       
         if (validateFiles) {
@@ -148,9 +133,7 @@ function previewFile() {
 //Check files are images or not
 let _validFileExtensions = [".jpg", ".jpeg", ".bmp", ".gif", ".png"];
 function Validate(oForm) {
-    // let arrInputs = document.querySelectorAll('input[name=photo]')
 
-    // for (let i = 0; i < arrInputs.length; i++) {
     let oInput = oForm;
     if (oInput.type == "file") {
         let sFileName = oInput.value;
@@ -170,7 +153,6 @@ function Validate(oForm) {
             }
         }
     }
-    // }
 
     return true;
 }
@@ -188,9 +170,7 @@ document.querySelector('#uploadform').addEventListener('submit', async event => 
 
     for (let ingredient of ingredients) {
         iMap[ingredient.dataset.ingre_id] = ingredient.parentElement.querySelector('input').value
-        // console.log(ingredient.dataset.ingre_id)
     }
-    // console.log(iMap)
 
     const stepsTextarea = document.querySelectorAll('textarea')
     let steps = []
@@ -200,8 +180,6 @@ document.querySelector('#uploadform').addEventListener('submit', async event => 
     }
 
     const step_ingres = document.querySelectorAll('.step_ingre')
-    // console.log(step_ingres)
-    // console.log(ingre_quan)
     let everystep = new Map()
 
     for (let step_ingre in step_ingres) {
@@ -209,29 +187,22 @@ document.querySelector('#uploadform').addEventListener('submit', async event => 
         const ingres = step_ingres[step_ingre].children
         if(ingres){
             for (let ingre of ingres) {
-                // console.log(ingre.innerText)
                 ingreArray.push(ingre.dataset.ingre_id)
-                // console.log(ingreArray)
             }
             everystep[`${parseInt(step_ingre) + 1}`] = ingreArray
-            console.log(ingreArray)
         }
     }
-    console.log('---------------')
 
 
     body.append("step", JSON.stringify(steps))
     body.append("ingre_quan", JSON.stringify(iMap))
     body.append("step_ingre", JSON.stringify(everystep))
-    // console.log(steps)
-    // console.log(event.target.photo)
 
-    await fetch('/upload_recipe', {
+    let res = await fetch('/upload_recipe', {
         method: 'POST',
-        // body: JSON.stringify(body)
         body: body
     })
-
+    await res.json()
     //Upload Success
     const uploadConfirm = confirm('Really upload?')
     if (uploadConfirm) {
@@ -255,10 +226,7 @@ initializeTemplate();
 const pluslogo = document.getElementById('pluslogo')
 pluslogo.addEventListener('click', async () => {
     let steps = document.querySelector('.steps');
-    // let order = document.querySelector('.recipe-image p').innerText
-    // let temp;
     let node = stepTemplate.cloneNode(true);
-    // let emptyNode =  steps.childNodes[1].cloneNode(false);
 
     node.querySelector('textarea').value = ''
     node.querySelector('input[name=photo]').value = ''
@@ -316,7 +284,6 @@ document.querySelector('.steps').addEventListener('click', async (event) => {
         const json = await res.json()
         if (json.login) {
             login = true
-            console.log(json.user_ingres)
             let recipes = []
             let ingres = []
             if (json.user_reci[0].id != null) {
@@ -327,7 +294,6 @@ document.querySelector('.steps').addEventListener('click', async (event) => {
                     }
                 } while (ingres.length != 4 && recipes.length != json.user_reci.length)
             }
-            console.log(json.user_reci.length)
             if (json.user_ingres[0].id != null) {
                 do {
                     let num = Math.floor(Math.random() * json.user_ingres.length)

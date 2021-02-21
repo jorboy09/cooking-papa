@@ -7,9 +7,6 @@ let stepTemplate;
 // define drag drop function
 
 function dragstart_handler(event) {
-    // console.log("dragStart");
-    // Change the source element's background color to signify drag has started
-    // ev.currentTarget.style.border = "dashed";
     // Add the id of the drag source element to the drag data payload so
     // it is available when the drop event is fired
     event.dataTransfer.setData("class", event.target.className.split(' ')[0]);
@@ -18,10 +15,6 @@ function dragstart_handler(event) {
     event.effectAllowed = "copyMove";
 }
 function dragover_handler(event) {
-    // console.log("dragOver");
-    // Change the target element's border to signify a drag over event
-    // has occurred
-    // ev.currentTarget.style.background = "lightblue";
     event.preventDefault();
 }
 function drop_handler(event) {
@@ -48,22 +41,17 @@ function drop_handler(event) {
     let crosses = document.querySelectorAll('.inSearch .ingredient .fa-times-circle')
     for (let cross of crosses) {
         cross.addEventListener('click', (event) => {
-            console.log('clicked')
             event.currentTarget.parentNode.parentNode.remove()
         })
     }
     let crossess = document.querySelectorAll('.step_ingre .ingredient .fa-times-circle')
     for (let cross of crossess) {
         cross.addEventListener('click', (event) => {
-            console.log('clicked')
             event.currentTarget.parentNode.remove()
         })
     }
 }
 function dragend_handler(event) {
-    // console.log("dragEnd");
-    // Restore source's border
-    //  event.target.style.border = "solid black";
     // Remove all of the drag data
     event.dataTransfer.clearData();
 }
@@ -149,7 +137,6 @@ let stepNumber =1;
         body: JSON.stringify({ recipeId: recipeId })
     })
     const jsonRecipe = await resRecipe.json()
-    console.log(jsonRecipe)
 
     // if user not the recipe creater : reject edit
     if (jsonLogin.userinfo[0].username != jsonRecipe[0].recipe_id.username) {
@@ -278,14 +265,12 @@ let stepNumber =1;
             })
             const jsons = await res.json()
             for (let json of jsons) {
-                // console.log(json)
                 document.querySelector('.inputSearch').innerHTML += `<div class="ingre_result" data-ingre_id='${json.id}'>${json.name_eng}</div>`
             }
         }
         const inputresults = document.querySelectorAll('.inputSearch .ingre_result')
         for (let inputresult of inputresults) {
             inputresult.addEventListener('click', async (event) => {
-                // console.log('click')
                 if (document.querySelector(`.inSearch [data-ingre_id='${event.currentTarget.dataset.ingre_id}'`) == null) {
                     const res = await fetch('/findingre', {
                         method: 'post',
@@ -295,7 +280,6 @@ let stepNumber =1;
                         body: JSON.stringify({ ingre_id: [event.currentTarget.dataset.ingre_id] })
                     })
                     const jsons = await res.json()
-                    // console.log(jsons)
                     for (let json of jsons) {
                         document.querySelector('.inSearch').innerHTML +=
                             `<div class="ingredientBox"><div class="ingredient" data-ingre_id='${json.id}' draggable="true" ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
@@ -308,7 +292,6 @@ let stepNumber =1;
                 let crosses = document.querySelectorAll('#searchbar .inSearch .ingredient .fa-times-circle')
                 for (let cross of crosses) {
                     cross.addEventListener('click', (event) => {
-                        // console.log('clicked')
                         event.currentTarget.parentNode.remove()
                     })
                 }
@@ -327,11 +310,7 @@ let stepNumber =1;
     const pluslogo = document.getElementById('pluslogo')
     pluslogo.addEventListener('click', async () => {
         let steps = document.querySelector('.steps');
-        // let order = document.querySelector('.recipe-image p').innerText
-        // let temp;
         let node = stepTemplate.cloneNode(true);
-        // let emptyNode =  steps.childNodes[1].cloneNode(false);
-
         node.querySelector('textarea').value = ''
         node.querySelector('input[name=photo]').value = ''
         node.querySelector('input[name=photo]').id = `input-${stepNumber}`
@@ -384,19 +363,6 @@ let stepNumber =1;
         }
     })
 
-    //
-    for (let i = 1; i < stepNumber; i++) {
-        console.log(document.querySelector(`#input-${i}`).value)
-    }
-    //
-
-    // const params = new URLSearchParams(location.search)
-
-    // if (params.get('login') == 'true') {
-    //     document.querySelector('.sidebar>ul').innerHTML = `<li id="welcome"><a href="#"><i class="fas fa-user-check"></i>Welcome Back! Login / Username</a></li>` + document.querySelector('.sidebar>ul').innerHTML
-    //     document.querySelector('.sidebar>ul>li:last-child').innerHTML = (`<li id="logout"><a href="#"><i class="fas fa-sign-out-alt"></i>Logout</a></li>`)
-    // }
-
     //Upload images
     document.querySelector('#uploadform').addEventListener('submit', async event => {
         event.preventDefault()
@@ -407,9 +373,7 @@ let stepNumber =1;
 
         for (let ingredient of ingredients) {
             iMap[`${ingredient.dataset.ingre_id}`] = ingredient.parentElement.querySelector('input').value
-            // console.log(ingredient.dataset.ingre_id)
         }
-        // console.log(iMap)
 
         const stepsTextarea = document.querySelectorAll('textarea')
         let steps = []
@@ -428,11 +392,6 @@ let stepNumber =1;
             }
             everystep[`${i + 1}`] = ingreArray
         }
-
-        // console.log('---------------')
-        // if(document.querySelector('#cover_pic_input').value == '') {
-        //     body.append("file", JSON.stringify(jsonRecipe[0].recipe_pic[0].cover_pic) )
-        // }
         let stepFileObject = {}
         if (document.querySelector('#cover_pic_input').value == '') {
             stepFileObject.cover_pic = false
@@ -447,18 +406,14 @@ let stepNumber =1;
                 stepFileObject[i] = true
             }
         }
-        console.log(stepFileObject)
         body.append("stepImg", JSON.stringify(stepFileObject) )
         body.append("step", JSON.stringify(steps))
         body.append("ingre_quan", JSON.stringify(iMap))
         body.append("step_ingre", JSON.stringify(everystep))
         body.append("recipe_id", JSON.stringify(parseInt(document.querySelector('.dishname').id)))
-        // console.log(steps)
-        // console.log(event.target.photo)
 
         const resEditDone = await fetch('/edit_recipe', {
             method: 'PUT',
-            // body: JSON.stringify(body)
             body: body
         })
         const jsonEditDone = await resEditDone.json()
@@ -477,7 +432,6 @@ let stepNumber =1;
         const json = await res.json()
         if (json.login) {
             login = true
-            console.log(json.user_ingres)
             let recipes = []
             let ingres = []
             if (json.user_reci[0].id != null) {
@@ -488,7 +442,6 @@ let stepNumber =1;
                     }
                 } while (ingres.length != 4 && recipes.length != json.user_reci.length)
             }
-            console.log(json.user_reci.length)
             if (json.user_ingres[0].id != null) {
                 do {
                     let num = Math.floor(Math.random() * json.user_ingres.length)

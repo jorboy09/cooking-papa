@@ -1,24 +1,22 @@
 let login = false
 
-// Show recipe
-; (async function userRecipe() {
-    const res = await fetch('/myrecipe');
-    const json = await res.json();
-    if (!json.loggedIn) {
-        // Have not login
-        document.querySelector('.recipe-container').innerHTML = "<div class='individual-recipe'>Please login to view your created recipe. Thank you!</div>"
-        // document.querySelector('.page-title .wrap').innerHTML = '';
-    } else {
-        // Upload button
-        document.querySelector('.page-title .wrap').innerHTML = `<a href='upload_recipe.html'><button class="upload-recipe button">Upload</button></a>`;
-        console.log(json.details)
-        // Have no created recipe
-        if (json.details.length == 0) {
-            document.querySelector('.recipe-container').innerHTML = "<div class='individual-recipe'>Create your first recipe!</div>"
+    // Show recipe
+    ; (async function userRecipe() {
+        const res = await fetch('/myrecipe');
+        const json = await res.json();
+        if (!json.loggedIn) {
+            // Have not login
+            document.querySelector('.recipe-container').innerHTML = "<div class='individual-recipe'>Please login to view your created recipe. Thank you!</div>"
         } else {
-            // insert recipe
-            for (let detail of json.details) {
-                document.querySelector('.recipe-container').innerHTML += `
+            // Upload button
+            document.querySelector('.page-title .wrap').innerHTML = `<a href='upload_recipe.html'><button class="upload-recipe button">Upload</button></a>`;
+            // Have no created recipe
+            if (json.details.length == 0) {
+                document.querySelector('.recipe-container').innerHTML = "<div class='individual-recipe'>Create your first recipe!</div>"
+            } else {
+                // insert recipe
+                for (let detail of json.details) {
+                    document.querySelector('.recipe-container').innerHTML += `
                 <div id="recipe-${detail['recipe_id']['id']}" class="individual-recipe">
                     <div class="recipe-image">
                         <img src="/uploads/${detail['recipe_pic'][0]['cover_pic']}">
@@ -43,13 +41,13 @@ let login = false
                     </div>
                 </div>
                 `
-            }
-            // Insert ingredients & quantities
-            const individualIngredients = document.querySelectorAll('.ingredients-list')
-            for (let i = 0; i < individualIngredients.length; i++) {
-                for (let ingredient of json.details[i]['recipe_ingres']) {
-                    // Insert ingredients 
-                    individualIngredients[i].innerHTML += `
+                }
+                // Insert ingredients & quantities
+                const individualIngredients = document.querySelectorAll('.ingredients-list')
+                for (let i = 0; i < individualIngredients.length; i++) {
+                    for (let ingredient of json.details[i]['recipe_ingres']) {
+                        // Insert ingredients 
+                        individualIngredients[i].innerHTML += `
                     <div class="individual-ingredient container"> 
                         <div class="ingredients-indicator"><i class="far fa-question-circle"></i></div>
                         <a class="ingredient-info" href="#popup-1"><i class="fas fa-info-circle"></i></a>
@@ -60,129 +58,129 @@ let login = false
                         <div class="ingredient-quantites" id='recipe-${json.details[i]['recipe_id']['id']}-ingredient-quantity-${ingredient['id']}'></div>
                     </div>                    
                     `
+                    }
+                    for (let quantity of json.details[i]['recipe_ingres_quan']) {
+                        // Insert quantites
+                        document.querySelector(`#recipe-${json.details[i]['recipe_id']['id']}-ingredient-quantity-${quantity['id']}`).innerHTML = quantity['ingres_quan']
+                    }
                 }
-                for (let quantity of json.details[i]['recipe_ingres_quan']) {
-                    // Insert quantites
-                    document.querySelector(`#recipe-${json.details[i]['recipe_id']['id']}-ingredient-quantity-${quantity['id']}`).innerHTML = quantity['ingres_quan']
+
+                // Remove button
+                const removeButtons = document.querySelectorAll('.recipe-remove-button')
+
+                for (const removeButton of removeButtons) {
+                    removeButton.addEventListener('click', async () => {
+                        const recipeID = removeButton.id.split('-')[1]
+                        const deleteConfirm = confirm('Really delete?')
+                        if (deleteConfirm) {
+                            const res = await fetch('/myrecipe', {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ recipe: recipeID })
+                            })
+                            const json = await res.json()
+                            if (!json.loggedIn) {
+                                alert('Please login before delete. Thank you!')
+                            } else if (!json.recipeOwner) {
+                                alert('Cannot delete. You are not the recipe owner')
+                            } else {
+                                alert('Recipe deleted')
+                                window.location.reload()
+                            }
+                        }
+                    })
                 }
-            }
 
-            // Remove button
-            const removeButtons = document.querySelectorAll('.recipe-remove-button')
+                // Edit button
+                const editButtons = document.querySelectorAll('.recipe-edit-button')
 
-            for (const removeButton of removeButtons) {
-                removeButton.addEventListener('click', async () => {
-                    const recipeID = removeButton.id.split('-')[1]
-                    const deleteConfirm = confirm('Really delete?')
-                    if (deleteConfirm) {
-                        const res = await fetch('/myrecipe', {
-                            method: 'DELETE',
+                for (const editButton of editButtons) {
+                    editButton.addEventListener('click', async () => {
+                        const recipeID = editButton.id.split('-')[1]
+                        const editConfirm = confirm('Really edit?')
+                        if (editConfirm) {
+                            window.location = `/edit_recipe.html?id=${recipeID}`
+                        }
+                    })
+                }
+
+                // popup ingredients details insert
+                const ingredients = document.querySelectorAll('.individual-ingredient .ingredient')
+                const ingredientInfos = document.querySelectorAll('.ingredient-info')
+                for (let i = 0; i < ingredientInfos.length; i++) {
+                    ingredientInfos[i].addEventListener('click', async () => {
+                        const res = await fetch('/ingredient_info', {
+                            method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
                             },
-                            body: JSON.stringify({ recipe: recipeID })
+                            body: JSON.stringify({ ingredient: ingredients[i].innerText })
                         })
                         const json = await res.json()
-                        if (!json.loggedIn) {
-                            alert('Please login before delete. Thank you!')
-                        } else if (!json.recipeOwner) {
-                            alert('Cannot delete. You are not the recipe owner')
+
+                        if (!json.result) {
+                            document.querySelector('.popup .ingredient-name').innerText = ingredients[i].innerText
+                            document.querySelector('.popup .content').innerText = "Sorry no such information ><"
+                            document.querySelector('.popup .popup-image').src = 'icon.png'
                         } else {
-                            alert('Recipe deleted')
-                            window.location.reload()
+                            document.querySelector('.popup .ingredient-name').innerText = json["name_eng"]
+                            document.querySelector('.popup .content').innerText = json.details
+                            document.querySelector('.popup .popup-image').src = json.image
                         }
-                    }
-                })
-            }
 
-            // Edit button
-            const editButtons = document.querySelectorAll('.recipe-edit-button')
+                        // update bookmark shown
+                        const resBookmark = await fetch('/ingredient_bookmark', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ ingredient: ingredients[i].innerText })
+                        })
+                        const jsonBookmark = await resBookmark.json()
+                        if (jsonBookmark.bookmarked) {
+                            document.querySelector('#popup-1 .bookmark').innerHTML = '<i class="fas fa-bookmark"></i>'
+                        } else {
+                            document.querySelector('#popup-1 .bookmark').innerHTML = '<i class="far fa-bookmark"></i>'
+                        }
+                    })
+                }
 
-            for (const editButton of editButtons) {
-                editButton.addEventListener('click', async () => {
-                    const recipeID = editButton.id.split('-')[1]
-                    const editConfirm = confirm('Really edit?')
-                    if (editConfirm) {
-                        window.location = `/edit_recipe.html?id=${recipeID}`
-                    }
-                })
-            }
-
-            // popup ingredients details insert
-            const ingredients = document.querySelectorAll('.individual-ingredient .ingredient')
-            const ingredientInfos = document.querySelectorAll('.ingredient-info')
-            for (let i = 0; i < ingredientInfos.length; i++) {
-                ingredientInfos[i].addEventListener('click', async () => {
-                    const res = await fetch('/ingredient_info', {
-                        method: 'POST',
+                // bookmark
+                document.querySelector('#popup-1 .bookmark').addEventListener('click', async () => {
+                    const res = await fetch('/ingredient_bookmark', {
+                        method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ ingredient: ingredients[i].innerText })
+                        body: JSON.stringify({ ingredient: document.querySelector('.popup .ingredient-name').innerText })
                     })
                     const json = await res.json()
-
-                    if (!json.result) {
-                        document.querySelector('.popup .ingredient-name').innerText = ingredients[i].innerText
-                        document.querySelector('.popup .content').innerText = "Sorry no such information ><"
-                        document.querySelector('.popup .popup-image').src = 'icon.png'
-                    } else {
-                        document.querySelector('.popup .ingredient-name').innerText = json["name_eng"]
-                        document.querySelector('.popup .content').innerText = json.details
-                        document.querySelector('.popup .popup-image').src = json.image
-                    }
-
-                    // update bookmark shown
-                    const resBookmark = await fetch('/ingredient_bookmark', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ ingredient: ingredients[i].innerText })
-                    })
-                    const jsonBookmark = await resBookmark.json()
-                    if (jsonBookmark.bookmarked) {
+                    if (!json.loggedIn) {
+                        alert('Please login before bookmark. Thank you!')
+                    } else if (!json.ingredientExist) {
+                        alert('Cannot bookmark as the ingredient do not exist. Sorry!')
+                    } else if (!json.bookmarked) {
                         document.querySelector('#popup-1 .bookmark').innerHTML = '<i class="fas fa-bookmark"></i>'
+                        alert('Bookmarked!')
                     } else {
                         document.querySelector('#popup-1 .bookmark').innerHTML = '<i class="far fa-bookmark"></i>'
+                        alert('Removed bookmark!')
                     }
                 })
-            }
 
-            // bookmark
-            document.querySelector('#popup-1 .bookmark').addEventListener('click', async () => {
-                const res = await fetch('/ingredient_bookmark', {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ ingredient: document.querySelector('.popup .ingredient-name').innerText })
-                })
-                const json = await res.json()
-                if (!json.loggedIn) {
-                    alert('Please login before bookmark. Thank you!')
-                } else if (!json.ingredientExist) {
-                    alert('Cannot bookmark as the ingredient do not exist. Sorry!')
-                } else if (!json.bookmarked) {
-                    document.querySelector('#popup-1 .bookmark').innerHTML = '<i class="fas fa-bookmark"></i>'
-                    alert('Bookmarked!')
-                } else {
-                    document.querySelector('#popup-1 .bookmark').innerHTML = '<i class="far fa-bookmark"></i>'
-                    alert('Removed bookmark!')
+                // Link dish name to recipe page
+                const recipeDetailLinkages = document.querySelectorAll('.recipe-title')
+                for (const recipeDetailLinkage of recipeDetailLinkages) {
+                    recipeDetailLinkage.addEventListener('click', () => {
+                        const recipeID = recipeDetailLinkage.id.split('-')[1]
+                        window.location = `/recipe.html?recipeId=${recipeID}`
+                    })
                 }
-            })
-
-            // Link dish name to recipe page
-            const recipeDetailLinkages = document.querySelectorAll('.recipe-title')
-            for (const recipeDetailLinkage of recipeDetailLinkages) {
-                recipeDetailLinkage.addEventListener('click', () => {
-                    const recipeID = recipeDetailLinkage.id.split('-')[1]
-                    window.location = `/recipe.html?recipeId=${recipeID}`
-                })    
             }
         }
-    }
-})()
+    })()
 
 // Check Search Item
 let searchingItems = new Set();
@@ -262,7 +260,6 @@ function drop_handler(event) {
     let crosses = document.querySelectorAll('#searchbar .inSearch .ingredient .fa-times-circle')
     for (let cross of crosses) {
         cross.addEventListener('click', (event) => {
-            console.log('clicked')
             event.currentTarget.parentNode.remove()
         })
     }
@@ -291,14 +288,12 @@ document.querySelector('#editor').addEventListener('input', async () => {
         })
         const jsons = await res.json()
         for (let json of jsons) {
-            // console.log(json)
             document.querySelector('.inputSearch').innerHTML += `<div class="ingre_result" data-ingre_id='${json.id}'>${json.name_eng}</div>`
         }
     }
     const inputresults = document.querySelectorAll('.inputSearch .ingre_result')
     for (let inputresult of inputresults) {
         inputresult.addEventListener('click', async (event) => {
-            // console.log('click')
             if (document.querySelector(`.inSearch [data-ingre_id='${event.currentTarget.dataset.ingre_id}'`) == null) {
                 const res = await fetch('/findingre', {
                     method: 'post',
@@ -308,7 +303,6 @@ document.querySelector('#editor').addEventListener('input', async () => {
                     body: JSON.stringify({ ingre_id: [event.currentTarget.dataset.ingre_id] })
                 })
                 const jsons = await res.json()
-                // console.log(jsons)
                 for (let json of jsons) {
                     document.querySelector('.inSearch').innerHTML +=
                         `<div class="ingredient" data-ingre_id='${json.id}' draggable="true" ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
@@ -321,7 +315,6 @@ document.querySelector('#editor').addEventListener('input', async () => {
             let crosses = document.querySelectorAll('#searchbar .inSearch .ingredient .fa-times-circle')
             for (let cross of crosses) {
                 cross.addEventListener('click', (event) => {
-                    // console.log('clicked')
                     event.currentTarget.parentNode.remove()
                 })
             }
@@ -335,55 +328,10 @@ document.querySelector('.fa-search').addEventListener('click', () => {
     for (let ingre_search of ingre_searches) {
         ingredients += ingre_search.dataset.ingre_id + ' '
     }
-    if (ingredients != ''){
+    if (ingredients != '') {
         window.location = `/search.html?id=${ingredients}`
     }
 })
-
-// myrecipes()
-
-// async function myrecipes() {
-//     const res = await fetch('/myrecipe')
-//     const jsons = await res.json()
-//     console.log(jsons)
-//     for (let json in jsons) {
-//         document.querySelector('.recipe-container').innerHTML +=
-//             `<div class="individual-recipe">
-//                     <div class="recipe-image">
-//                         <img src="./photo/${jsons[json].recipe_pic.cover_pic}">
-//                     </div>
-//                     <div class="recipe-info">
-//                         <div class="recipe-title">
-//                             <h3>${jsons[json].recipe_id.name_eng}</h3>
-//                         </div>
-//                         <div class="recipe-ingredients">
-//                             <div class="ingredients-title">
-//                                 Ingredients:
-//                             </div>
-//                             <div class="ingredients-list">                              
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>`
-//         for (let recipe_ingre of jsons[json].recipe_ingres) {
-//             document.querySelector(`.recipe-container>div:nth-child(${parseInt(json) + 1}) .ingredients-list`).innerHTML +=
-//                 `<div class="individual-ingredient container">
-//             <div class="ingredients-indicator"><i class="far fa-question-circle"></i></div>
-//             <a class="ingredient-info" href="#popup-1"><i class="fas fa-info-circle"></i></a>
-//             <div class="ingredient" data-ingre_id='${recipe_ingre.id}' draggable="true" ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
-//                 <img src="./photo/${recipe_ingre.image}">
-//                 <i class="far fa-times-circle"></i>${recipe_ingre.name_eng}
-//             </div>
-//         </div>`
-//             for (let ingre_quan in jsons[json].recipe_ingres_quan) {
-//                 if (jsons[json].recipe_ingres_quan[ingre_quan].id == recipe_ingre.id) {
-//                     document.querySelector(`.recipe-container>div:nth-child(${parseInt(json) + 1}) .individual-ingredient:nth-child(${parseInt(ingre_quan) + 1})`).innerHTML +=
-//                         `<div class="ingredient-quantites">${jsons[json].recipe_ingres_quan[ingre_quan].ingres_quan}</div>`
-//                 }
-//             }
-//         }
-//     }
-// }
 
     //get login status
     ; (async () => {
@@ -391,41 +339,40 @@ document.querySelector('.fa-search').addEventListener('click', () => {
         const json = await res.json()
         if (json.login) {
             login = true
-            console.log(json.user_ingres)
             let recipes = []
             let ingres = []
-            if (json.user_reci[0].id != null){
-                do{
-                    let num = Math.floor(Math.random()* json.user_reci.length)
-                    if (!recipes.includes(num)){
+            if (json.user_reci[0].id != null) {
+                do {
+                    let num = Math.floor(Math.random() * json.user_reci.length)
+                    if (!recipes.includes(num)) {
                         recipes.push(num)
-                    }            
-                }while(ingres.length != 4 && recipes.length != json.user_reci.length)
+                    }
+                } while (ingres.length != 4 && recipes.length != json.user_reci.length)
             }
-            console.log(json.user_reci.length)
-            if (json.user_ingres[0].id != null){
-                do{
-                    let num = Math.floor(Math.random()* json.user_ingres.length)
-                    if (!ingres.includes(num)){
+            if (json.user_ingres[0].id != null) {
+                do {
+                    let num = Math.floor(Math.random() * json.user_ingres.length)
+                    if (!ingres.includes(num)) {
                         ingres.push(num)
-                    }            
-                }while(ingres.length != 4 && ingres.length != json.user_ingres.length)
+                    }
+                } while (ingres.length != 4 && ingres.length != json.user_ingres.length)
             }
-            if (json.userinfo[0].profile_pic == null){
+            if (json.userinfo[0].profile_pic == null) {
                 document.querySelector('.sidebar>ul').innerHTML = `<li id="welcome"><i class="fas fa-user-check"><span>Welcome Back!</span></i> <a href="/profile.html">${json.userinfo[0].username}</a></li>` + document.querySelector('.sidebar>ul').innerHTML
-            }else{
-                document.querySelector('.sidebar>ul').innerHTML = `<li id="welcome"><i class="fas fa-user-check"><span>Welcome Back!</span></i> <a href="/profile.html"><img src="/uploads/${json.userinfo[0].profile_pic}">${json.userinfo[0].username}</a></li>` + document.querySelector('.sidebar>ul').innerHTML}
-            for (let recipe of recipes){
-            document.querySelector('#favrecipe .menubox').innerHTML+=`<button type="button" class="btn btn-warning" data-recipe_id = '${json.user_reci[recipe].id}'>${json.user_reci[recipe].recipe_name_eng}</button>`
+            } else {
+                document.querySelector('.sidebar>ul').innerHTML = `<li id="welcome"><i class="fas fa-user-check"><span>Welcome Back!</span></i> <a href="/profile.html"><img src="/uploads/${json.userinfo[0].profile_pic}">${json.userinfo[0].username}</a></li>` + document.querySelector('.sidebar>ul').innerHTML
             }
-            document.querySelector('#favrecipe .menubox').innerHTML+= `<a href="fav_recipe.html" class='button-more'><button type="button" class="btn btn-secondary">More</button></a>`
-            for (let ingre of ingres){
-            document.querySelector('#mying .menubox').innerHTML+=`<button type="button" class="btn btn-warning" data-ingre_id = '${json.user_ingres[ingre].id}'>${json.user_ingres[ingre].name_eng}</button>`
+            for (let recipe of recipes) {
+                document.querySelector('#favrecipe .menubox').innerHTML += `<button type="button" class="btn btn-warning" data-recipe_id = '${json.user_reci[recipe].id}'>${json.user_reci[recipe].recipe_name_eng}</button>`
             }
-            document.querySelector('#mying .menubox').innerHTML+= `<a href="my_ingredient.html" class='button-more'><button type="button" class="btn btn-secondary">More</button></a>`
-    
+            document.querySelector('#favrecipe .menubox').innerHTML += `<a href="fav_recipe.html" class='button-more'><button type="button" class="btn btn-secondary">More</button></a>`
+            for (let ingre of ingres) {
+                document.querySelector('#mying .menubox').innerHTML += `<button type="button" class="btn btn-warning" data-ingre_id = '${json.user_ingres[ingre].id}'>${json.user_ingres[ingre].name_eng}</button>`
+            }
+            document.querySelector('#mying .menubox').innerHTML += `<a href="my_ingredient.html" class='button-more'><button type="button" class="btn btn-secondary">More</button></a>`
+
             document.querySelector('.sidebar>ul>li:last-child').innerHTML = `<li id="logout"><a href="#"><i class="fas fa-sign-out-alt"></i>Logout</a></li>`
-            
+
             // logout listener
             document.querySelector('#logout').addEventListener('click', async () => {
                 await fetch('/logout', {
@@ -443,7 +390,7 @@ async function getsuggest_ingre() {
     const res = await fetch('/ingre_box')
     const jsons = await res.json()
     let items = []
-    do{
+    do {
         let ingre_id = Math.floor(Math.random() * jsons.length)
         if (!items.includes(ingre_id)) {
             document.querySelector('.suggest_ingredients').innerHTML += `<div class="ingredient" data-ingre_id='${jsons[ingre_id].id}' draggable="true"
@@ -453,6 +400,6 @@ async function getsuggest_ingre() {
             </div>`
             items.push(ingre_id)
         }
-    }while(items.length !=4)
+    } while (items.length != 4)
 }
 getsuggest_ingre()

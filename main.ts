@@ -1,14 +1,11 @@
 import express from 'express'
 import path from 'path'
 import expressSession from 'express-session'
-// import formatISO from 'date-fns/formatISO9075'
 import bodyParser from 'body-parser'
 import multer from 'multer'
 import { Client } from 'pg';
 import dotenv from 'dotenv';
-// @ts-ignore
 import bcrypt from 'bcryptjs';
-// import fs from 'fs'
 import fetch from 'node-fetch'
 import grant from 'grant-express';
 
@@ -41,14 +38,10 @@ let upload = multer({ //multer settings
   fileFilter: function (req, file, callback) {
     let ext = path.extname(file.originalname);
     if (ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
-      // return callback(null, false)
       return callback(new Error('Only images are allowed'))
     }
     callback(null, true)
   },
-  // limits:{
-  //     fileSize: 1024 * 1024
-  // }
 })
 
 app.use(express.static('./public'))
@@ -61,8 +54,6 @@ app.use(bodyParser.json())
 //@ts-ignore
 app.use(grant({
   "defaults": {
-    // "protocol": "http",
-    // "host": "localhost:8082",
     "origin": "http://localhost:8080",
     "transport": "session",
     "state": true,
@@ -96,7 +87,6 @@ app.post('/register', async (req, res) => {
       req.body.username,
       await bcrypt.hash(req.body.password, 10)
     ])
-    // const id = await client.query('select id from users where username = $1;',[req.body.username])
     req.session['userid'] = users.rows[0].id
     res.json({ result: true })
   } else {
@@ -121,8 +111,7 @@ app.get('/login/google', async (req, res) => {
     const newUsers = await client.query('INSERT INTO users (username) VALUES ($1) RETURNING id', [
       json.email
     ])
-    // const newUsers = (await client.query('SELECT * FROM users WHERE username = $1', [json.email])).rows;
-    req.session["userid"] = newUsers[0].id
+    req.session["userid"] = newUsers.rows[0].id
     res.redirect('/preferences.html')
   }
 })
@@ -153,8 +142,6 @@ app.post('/logout', (req, res) => {
 })
 
 app.get('/loginornot', async (req, res) => {
-  // if (req.session != null) {
-  // res.json(req.session['userid'])
   if (req.session['userid'] != null) {
     const userinfo = await client.query(`select username, profile_pic from users where id = $1;`, [req.session['userid']])
     const user_fav_ingres = await client.query(`select ingredients.name_eng, ingredients.id, ingredients.image from users full outer join users_fav_ingres on users_fav_ingres.users_id = users.id full outer join ingredients on ingredients.id =
@@ -169,46 +156,43 @@ app.get('/loginornot', async (req, res) => {
 
 //search ingredients when input
 app.post('/searchinput', async (req, res) => {
+  const limit = 8;
   const results = await client.query(`select id, name_eng from ingredients where lower(name_eng) like $1 union all 
   select id, name_eng from ingredients where lower(name_eng) like $2 and 
-  id not in (select id from ingredients where lower(name_eng) like $1) limit 8;`, [
+  id not in (select id from ingredients where lower(name_eng) like $1) limit $3;`, [
     `${req.body.searchtext.toLowerCase()}%`,
-    `%${req.body.searchtext.toLowerCase()}%`
+    `%${req.body.searchtext.toLowerCase()}%`,
+    limit
   ])
   res.json(results.rows)
-  // console.log(results.rows)
 })
 
 //find ingredients with ingredients id
 app.post('/findingre', async (req, res) => {
-  const ids = req.body.ingre_id
-  const params = []
-  let query = 'select id, name_eng, image from ingredients where id in ('
-  for (let id of ids) {
-    query = query + `?,`
-    params.push(id)
+  const ids = req.body.ingre_id.map((id: string) => parseInt(id))
+  let query = `select id, name_eng, image from ingredients where id in (`
+  for (let id in ids){
+    query = query + '$'+(parseInt(id)+1) +','
   }
-  query = query.substr(0, query.length - 1) + ') order by case id '
-  for (let id in ids) { 
-    query = query + `when '${parseInt(ids[id])}' then '${parseInt(id + 1)}' `
+  query = query.substring(0, query.length-1) + ') order by (case id '
+  for (let id in ids) {
+    query = query + `when ${ids[id]} then '${parseInt(id) + 1}' `
   }
-  query = query + 'end;'
-  const name = await client.query(query, params)
+  query = query + 'end);'
+  const name = await client.query(query, ids)
   res.json(name.rows)
 })
 
 //search recipe and send data back to roughly show
 app.post('/searchrecipe', async (req, res) => {
-  const ids = req.body.ingre_id
-  const params = []
+  const ids = req.body.ingre_id.map((id: string) => parseInt(id))
   let query = `select recipes.id, recipes.recipe_name_eng from recipes join steps on recipes.id = steps.recipes_id join steps_ingres on steps.id = steps_ingres.steps_id 
   join ingredients on ingredients.id = steps_ingres.ingres_id where ingredients.id in (`
-  for (let id of ids) {
-    query = query + `?,`
-    params.push(id)
+  for (let id in ids){
+    query = query + '$'+(parseInt(id)+1) +','
   }
   query = query.substr(0, query.length - 1) + ') group by (recipes.id) order by count(recipes.id) DESC;'
-  const recipes = await client.query(query, params)
+  const recipes = await client.query(query, ids)
   let details = []
   for (let recipe of recipes.rows) {
     let recipe_ingres = await client.query(`select distinct ingredients.id, ingredients.name_eng, ingredients.image from recipes join steps on recipes.id = steps.recipes_id join steps_ingres on steps.id = steps_ingres.steps_id 
@@ -230,26 +214,20 @@ app.post('/searchrecipe', async (req, res) => {
 app.post('/recipeDetails', async (req, res) => {
   const recipes = await client.query(`select recipes.id, recipes.recipe_name_eng, users.username from recipes
    join users on users.id = recipes.creater_id where recipes.id = $1`, [req.body.recipeId])
-  console.log(recipes.rows)
   let details = []
   for (let recipe of recipes.rows) {
     let recipe_ingres = await client.query(`select distinct ingredients.id, ingredients.name_eng, ingredients.image, steps_ingres.ingres_quan from recipes join steps on recipes.id = steps.recipes_id join steps_ingres on steps.id = steps_ingres.steps_id 
-    join ingredients on ingredients.id = steps_ingres.ingres_id where recipes.id = ${recipe.id}`) // [code review] possible SQL injection
-    let recipe_cover = await client.query(`select cover_pic from recipes where id = ${recipe.id}`) // [code review] possible SQL injection
-    // let recipe_ingres_quan = await client.query(`select distinct ingredients.id, steps_ingres.ingres_quan from recipes join steps on recipes.id = steps.recipes_id join steps_ingres on steps.id = steps_ingres.steps_id 
-    // join ingredients on ingredients.id = steps_ingres.ingres_id where recipes.id = ${recipe.id} and steps_ingres.ingres_quan is not null`)
-    let recipe_steps = (await client.query(`select distinct steps.id, steps.steps_description, steps.steps_order, steps.steps_img from recipes join steps on recipes.id = steps.recipes_id where recipes.id = ${recipe.id} order by steps.steps_order`)).rows // [code review] possible SQL injection
+    join ingredients on ingredients.id = steps_ingres.ingres_id where recipes.id = $1;`,[recipe.id])
+    let recipe_cover = await client.query(`select cover_pic from recipes where id = $1;`,[recipe.id])
+    let recipe_steps = (await client.query(`select distinct steps.id, steps.steps_description, steps.steps_order, steps.steps_img from recipes join steps on recipes.id = steps.recipes_id where recipes.id = $1 order by steps.steps_order;`, [recipe.id])).rows
     for (let recipe_step of recipe_steps) {
-      recipe_step['ingredients'] = (await client.query(`select distinct ingredients.name_eng, ingredients.id, ingredients.image from steps join steps_ingres on steps_ingres.steps_id = steps.id join ingredients on ingredients.id = steps_ingres.ingres_id where steps.recipes_id = ${recipe.id} AND steps.id = ${recipe_step.id}`)).rows // [code review] possible SQL injection
+      recipe_step['ingredients'] = (await client.query(`select distinct ingredients.name_eng, ingredients.id, ingredients.image from steps join steps_ingres on steps_ingres.steps_id = steps.id join ingredients on ingredients.id = steps_ingres.ingres_id where steps.recipes_id = $1 AND steps.id = $2`,[recipe.id, recipe_step.id])).rows
     }
-    // let recipe_tag = await client.query(`select distinct tags.name_eng from recipes join tags_recipes on recipes.id = tags_recipes.recipes_id join tags on tags_recipes.tags_id = tags.id where recipes.id = ${recipe.id}`)
     details.push({
       recipe_id: recipe,
       recipe_pic: recipe_cover.rows,
       recipe_ingres: recipe_ingres.rows,
-      // recipe_ingres_quan: recipe_ingres_quan.rows,
       recipe_step: recipe_steps,
-      // recipe_tag: recipe_tag.rows
     })
   }
   res.json(details)
@@ -257,16 +235,15 @@ app.post('/recipeDetails', async (req, res) => {
 
 //get users favorite recipe
 app.get('/favrecipe', isLoggedIn, async (req, res) => {
-  let query = `select distinct recipes.id, recipes.recipe_name_eng from users_fav_recipes join recipes on users_fav_recipes.recipes_id = recipes.id join steps on recipes.id = steps.recipes_id join steps_ingres on steps.id = steps_ingres.steps_id 
-  join ingredients on ingredients.id = steps_ingres.ingres_id where users_fav_recipes.users_id = ${req.session['userid']}`
-  const recipes = await client.query(query)
+  const recipes = await client.query(`select distinct recipes.id, recipes.recipe_name_eng from users_fav_recipes join recipes on users_fav_recipes.recipes_id = recipes.id join steps on recipes.id = steps.recipes_id join steps_ingres on steps.id = steps_ingres.steps_id 
+  join ingredients on ingredients.id = steps_ingres.ingres_id where users_fav_recipes.users_id = $1;`,[req.session['userid']])
   let details = []
   for (let recipe of recipes.rows) {
     let recipe_ingres = await client.query(`select distinct ingredients.id, ingredients.name_eng, ingredients.image from recipes join steps on recipes.id = steps.recipes_id join steps_ingres on steps.id = steps_ingres.steps_id 
-    join ingredients on ingredients.id = steps_ingres.ingres_id where recipes.id = ${recipe.id}`)
-    let recipe_cover = await client.query(`select cover_pic from recipes where id = ${recipe.id}`)
+    join ingredients on ingredients.id = steps_ingres.ingres_id where recipes.id = $1;`, [recipe.id])
+    let recipe_cover = await client.query(`select cover_pic from recipes where id = $1;`,[recipe.id])
     let recipe_ingres_quan = await client.query(`select distinct ingredients.id, steps_ingres.ingres_quan from recipes join steps on recipes.id = steps.recipes_id join steps_ingres on steps.id = steps_ingres.steps_id 
-    join ingredients on ingredients.id = steps_ingres.ingres_id where recipes.id = ${recipe.id} and steps_ingres.ingres_quan is not null`)
+    join ingredients on ingredients.id = steps_ingres.ingres_id where recipes.id = $1 and steps_ingres.ingres_quan is not null`, [recipe.id])
     details.push({
       recipe_id: recipe,
       recipe_pic: recipe_cover.rows,
@@ -279,19 +256,15 @@ app.get('/favrecipe', isLoggedIn, async (req, res) => {
 
 //get users created recipe
 app.get('/myrecipe', isLoggedIn, async (req, res) => {
-  // // Check who logged in
-  // const userID = (await client.query('SELECT id FROM users WHERE id = $1', [req.session['userid']])).rows
-
   // Get recipe details
-  let query = `select recipes.id, recipes.recipe_name_eng from recipes where recipes.creater_id = ${req.session['userid']}`
-  const recipes = await client.query(query)
+  const recipes = await client.query(`select recipes.id, recipes.recipe_name_eng from recipes where recipes.creater_id = $1;`,[req.session['userid']])
   let details = []
   for (let recipe of recipes.rows) {
     let recipe_ingres = await client.query(`select distinct ingredients.id, ingredients.name_eng, ingredients.image from recipes join steps on recipes.id = steps.recipes_id join steps_ingres on steps.id = steps_ingres.steps_id 
-    join ingredients on ingredients.id = steps_ingres.ingres_id where recipes.id = ${recipe.id}`)
-    let recipe_cover = await client.query(`select cover_pic from recipes where id = ${recipe.id}`)
+    join ingredients on ingredients.id = steps_ingres.ingres_id where recipes.id = $1;`,[recipe.id])
+    let recipe_cover = await client.query(`select cover_pic from recipes where id = $1;`,[recipe.id])
     let recipe_ingres_quan = await client.query(`select distinct ingredients.id, steps_ingres.ingres_quan from recipes join steps on recipes.id = steps.recipes_id join steps_ingres on steps.id = steps_ingres.steps_id 
-    join ingredients on ingredients.id = steps_ingres.ingres_id where recipes.id = ${recipe.id} and steps_ingres.ingres_quan is not null`)
+    join ingredients on ingredients.id = steps_ingres.ingres_id where recipes.id = $1 and steps_ingres.ingres_quan is not null`,[recipe.id])
     details.push({
       recipe_id: recipe,
       recipe_pic: recipe_cover.rows,
@@ -303,8 +276,6 @@ app.get('/myrecipe', isLoggedIn, async (req, res) => {
 })
 
 app.delete('/myrecipe', isLoggedIn, async (req, res) => {
-  // Check who logged in
-  // const userID = (await client.query('SELECT id FROM users WHERE id = $1', [req.session['userid']])).rows
   const recipe = (await client.query('SELECT * FROM recipes WHERE creater_id = $1 AND id = $2', [req.session['userid'], req.body.recipe])).rows
   if (recipe.length == 0) {
     // response if not the recipe owner
@@ -316,7 +287,6 @@ app.delete('/myrecipe', isLoggedIn, async (req, res) => {
     }
     await client.query('DELETE FROM steps WHERE recipes_id = $1', [req.body.recipe])
     await client.query('DELETE FROM users_fav_recipes WHERE recipes_id = $1', [req.body.recipe])
-    // await client.query('DELETE FROM tags_recipes WHERE recipes_id = $1', [req.body.recipe])
     await client.query('DELETE FROM recipes WHERE id = $1', [req.body.recipe])
     res.json({ loggedIn: true, recipeOwner: true })
   }
@@ -356,9 +326,8 @@ app.post('/ingredient_info', async (req, res) => {
 })
 
 // get ingredient bookmark status
-app.post('/ingredient_bookmark', isLoggedIn, async (req, res) => { //[code review] should use get
+app.post('/ingredient_bookmark', isLoggedIn, async (req, res) => { 
   const user = (await client.query('SELECT id FROM users where id = $1', [req.session['userid']])).rows
-  // [code review] should get via ID instead of name
   const ingredientInfo = (await client.query('SELECT id FROM ingredients where RTRIM(LOWER(name_eng)) = RTRIM(LOWER($1))', [req.body.ingredient])).rows
   if (ingredientInfo.length > 0) {
     const bookmarkStatus = (await client.query('SELECT id FROM users_fav_ingres WHERE users_id = $1 AND ingres_id = $2', [user[0].id, ingredientInfo[0].id])).rows
@@ -444,15 +413,13 @@ app.put('/recipe_bookmark', isLoggedIn, async (req, res) => {
 //Upload Recipes
 app.post('/upload_recipe', upload.array('photo'), async (req, res) => {
   await client.query('INSERT INTO recipes (recipe_name_eng, cover_pic, created_at, updated_at, creater_id) VALUES ($1, $2, NOW(), NOW(), $3);', [req.body.dishname, req.files[0].filename, req.session['userid']]);
-  // console.log(2)
   let steps = req.body.content;
-
   const stepIds = [];
   for (let i = 0; i < steps.length; i++) {
     const result = await client.query('INSERT INTO steps (steps_description, steps_order, steps_img, recipes_id) VALUES ($1, $2, $3, $4) RETURNING id;', [
       steps[i],
       i + 1,
-      req.files[i + 1]?.filename, // [code review] if photos are missing from some steps, the order will be wrong
+      req.files[i + 1]?.filename,
       (await client.query('SELECT id FROM recipes where recipe_name_eng = $1 AND creater_id = $2;', [
         req.body.dishname,
         req.session['userid']])).rows[0].id])
@@ -468,43 +435,36 @@ app.post('/upload_recipe', upload.array('photo'), async (req, res) => {
         ingredientQuantities[id],
         parseInt(id),
         stepIds[key]]);
-        // [code review] below SQL is not needed if above INSERT returns id after insertion
-        // (await client.query('select id from steps where recipes_id = $1 and steps_order = $2;',
-        //   [(await client.query('SELECT id FROM recipes where recipe_name_eng = $1 AND creater_id = $2;',
-        //     [req.body.dishname, req.session['userid']])).rows[0].id, parseInt(key)])).rows[0].id])
     }
   }
+  res.json()
 })
 
 //Edit Recipes
-app.put('/edit_recipe', upload.array('photo'), async (req, res) => {
-  // [code review] security!! (1) unauthenticated can edit (2) didnt check authorization (whether current user can edit such recipe)
-
+app.put('/edit_recipe', isLoggedIn, upload.array('photo'), async (req, res) => {
   if (req.files.length == 0) {
-    // [code review] don't know why req.body.file can replace req.files[0] 
-    req.files[0] = {filename: req.body.file.replace(/"/g,'')}
+    req.files[0] = { filename: req.body.file.replace(/"/g, '') }
   }
-  
   // update recipes
   await client.query('UPDATE recipes SET recipe_name_eng = $1, updated_at = NOW() WHERE id = $2', [req.body.dishname, parseInt(req.body.recipe_id)])
-  
+
   // update steps
   let steps = req.body.content;
   const stepsOriginal = (await client.query('SELECT id FROM steps WHERE recipes_id = $1', [parseInt(req.body.recipe_id)])).rows
-  
+
   if (stepsOriginal.length < steps.length) {
     for (let i = 0; i < steps.length; i++) {
-      const stepIds = (await client.query('SELECT id FROM steps WHERE recipes_id = $1 AND steps_order = $2', [parseInt(req.body.recipe_id), i+1])).rows
+      const stepIds = (await client.query('SELECT id FROM steps WHERE recipes_id = $1 AND steps_order = $2', [parseInt(req.body.recipe_id), i + 1])).rows
       if (stepIds.length > 0) {
         await client.query('UPDATE steps SET steps_description = $1 WHERE recipes_id = $2 AND steps_order = $3', [
           steps[i],
           parseInt(req.body.recipe_id),
-          i+1
+          i + 1
         ])
       } else {
         await client.query('INSERT INTO steps (steps_description, steps_order, recipes_id) VALUES ($1, $2, $3);', [
           steps[i],
-          i+1,
+          i + 1,
           parseInt(req.body.recipe_id),
         ])
       }
@@ -515,26 +475,24 @@ app.put('/edit_recipe', upload.array('photo'), async (req, res) => {
       await client.query('UPDATE steps SET steps_description = $1 WHERE recipes_id = $2 AND steps_order = $3', [
         steps[i],
         parseInt(req.body.recipe_id),
-        i+1
+        i + 1
       ])
     }
     // Delete steps
-    // const stepsDiff = stepsOriginal.length - steps.length
     for (let i = steps.length; i < stepsOriginal.length; i++) {
-      const stepId = (await client.query('SELECT id FROM steps WHERE recipes_id = $1 AND steps_order = $2', [parseInt(req.body.recipe_id), i+1])).rows
-      await client.query('DELETE FROM steps_ingres WHERE steps_id = $1', [stepId])  
+      const stepId = (await client.query('SELECT id FROM steps WHERE recipes_id = $1 AND steps_order = $2', [parseInt(req.body.recipe_id), i + 1])).rows
+      await client.query('DELETE FROM steps_ingres WHERE steps_id = $1', [stepId])
       await client.query('DELETE FROM steps WHERE steps_order = $1 AND recipes_id = $2', [
-        i+1,
+        i + 1,
         parseInt(req.body.recipe_id)
-      ])  
+      ])
     }
   }
 
   // Update steps_ingres
   let ingredientQuantities = JSON.parse(req.body.ingre_quan)
   let stepIngredients = JSON.parse(req.body.step_ingre)
-  // console.log(key, ingredientQuantities[key]);
-    // Delete old data
+  // Delete old data
   const stepsIngreOriginals = (await client.query('SELECT distinct steps_ingres.steps_id FROM steps_ingres join steps on steps.id = steps_ingres.steps_id WHERE recipes_id = $1', [parseInt(req.body.recipe_id)])).rows
   if (stepsIngreOriginals.length > 0) {
     for (const stepsIngreOriginal of stepsIngreOriginals) {
@@ -542,21 +500,21 @@ app.put('/edit_recipe', upload.array('photo'), async (req, res) => {
     }
   }
   // Replace with new data
-  for (let key in stepIngredients){
-    for (let id of stepIngredients[key]){
+  for (let key in stepIngredients) {
+    for (let id of stepIngredients[key]) {
       await client.query('INSERT INTO steps_ingres (ingres_quan, ingres_id, steps_id) VALUES ($1, $2, $3);', [
         ingredientQuantities[id],
         parseInt(id),
         (await client.query('select id from steps where recipes_id = $1 and steps_order = $2;',
-        [parseInt(req.body.recipe_id), parseInt(key)])).rows[0].id])
-    }  
+          [parseInt(req.body.recipe_id), parseInt(key)])).rows[0].id])
+    }
   }
 
   // update image
   const parseObjectJSON = JSON.parse(req.body.stepImg)
-    // update cover photo
+  // update cover photo
   if (parseObjectJSON['cover_pic']) {
-    await client.query('UPDATE recipes SET cover_pic = $1, updated_at = NOW() WHERE id = $2', [req.files[0], parseInt(req.body.recipe_id)])  
+    await client.query('UPDATE recipes SET cover_pic = $1, updated_at = NOW() WHERE id = $2', [req.files[0], parseInt(req.body.recipe_id)])
   }
   // update step photo
   let fileNum = 0;
@@ -567,7 +525,7 @@ app.put('/edit_recipe', upload.array('photo'), async (req, res) => {
     }
   }
 
-  res.json({result : true})
+  res.json({ result: true })
 })
 
 app.post('/findunit', async (req, res) => {
@@ -575,10 +533,10 @@ app.post('/findunit', async (req, res) => {
   let unit: Boolean[] = []
   for (let word in words) {
     if (isNaN(words[word])) {
-      const inList = await client.query(`select * from quantifiers where lower(quantifiers_eng) = lower('${words[word]}')`)
-      const inTable = await client.query(`select * from ingredients where lower(name_eng) = lower('${words[word]}')`)
-      const inListtwo = await client.query(`select * from quantifiers where lower(quantifiers_eng) = lower('${words[word] + ' ' + words[word + 1]}')`)
-      const inTabletwo = await client.query(`select * from ingredients where lower(name_eng) = lower('${words[word] + ' ' + words[word + 1]}')`)
+      const inList = await client.query(`select * from quantifiers where lower(quantifiers_eng) = lower($1)`,[words[word]])
+      const inTable = await client.query(`select * from ingredients where lower(name_eng) = lower($1)`,[words[word]])
+      const inListtwo = await client.query(`select * from quantifiers where lower(quantifiers_eng) = lower($1)`,[`${words[word] + ' ' + words[word + 1]}`])
+      const inTabletwo = await client.query(`select * from ingredients where lower(name_eng) = lower($1)`,[`${words[word] + ' ' + words[word + 1]}`])
       if (inList.rows.length != 0 || inTable.rows.length != 0 || inListtwo.rows.length != 0 || inTabletwo.rows.length != 0) {
         unit[word] = true;
       } else {
@@ -591,7 +549,6 @@ app.post('/findunit', async (req, res) => {
 
 //send ingredients name and id with users fav_ingre info
 app.get('/getfav_ingre', isLoggedIn, async (req, res) => {
-  // [code review] why not join?
   const ingres = await client.query(`select id, name_eng, image from ingredients;`)
   const fav_ingres = await client.query(`select ingres_id from users_fav_ingres where users_id = ${req.session['userid']}`)
   res.json([ingres.rows, fav_ingres.rows])

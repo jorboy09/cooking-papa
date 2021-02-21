@@ -30,7 +30,6 @@ function drop_handler(event) {
     let crosses = document.querySelectorAll('#searchbar .inSearch .ingredient .fa-times-circle')
     for (let cross of crosses) {
         cross.addEventListener('click', (event) => {
-            console.log('clicked')
             event.currentTarget.parentNode.remove()
         })
     }
@@ -59,14 +58,11 @@ document.querySelector('#editor').addEventListener('input', async () => {
         })
         const jsons = await res.json()
         for (let json of jsons) {
-            // console.log(json)
             document.querySelector('.inputSearch').innerHTML += `<div class="ingre_result" data-ingre_id='${json.id}'>${json.name_eng}</div>`
         }
     }
     const inputresults = document.querySelectorAll('.inputSearch .ingre_result')
     for (let inputresult of inputresults) {
-        inputresult.addEventListener('click', async (event) => {
-            // console.log('click')
             if (document.querySelector(`.inSearch [data-ingre_id='${event.currentTarget.dataset.ingre_id}'`) == null) {
                 const res = await fetch('/findingre', {
                     method: 'post',
@@ -76,7 +72,6 @@ document.querySelector('#editor').addEventListener('input', async () => {
                     body: JSON.stringify({ ingre_id: [event.currentTarget.dataset.ingre_id] })
                 })
                 const jsons = await res.json()
-                // console.log(jsons)
                 for (let json of jsons) {
                     document.querySelector('.inSearch').innerHTML +=
                         `<div class="ingredient" data-ingre_id='${json.id}' draggable="true" ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
@@ -89,7 +84,6 @@ document.querySelector('#editor').addEventListener('input', async () => {
             let crosses = document.querySelectorAll('#searchbar .inSearch .ingredient .fa-times-circle')
             for (let cross of crosses) {
                 cross.addEventListener('click', (event) => {
-                    // console.log('clicked')
                     event.currentTarget.parentNode.remove()
                 })
             }
@@ -127,7 +121,6 @@ document.querySelector('.select_all').addEventListener('click', () => {
         for (let single of all) {
             if (single.dataset.tick == 'true') {
                 single.dataset.tick = 'false'
-                console.log(single.lastChild)
                 single.removeChild(single.lastChild)
                 if (add.indexOf(single.dataset.ingre_id) >= 0) {
                     add.splice(add.indexOf(single.dataset.ingre_id), 1)
@@ -147,7 +140,6 @@ document.querySelector('.select_all').addEventListener('click', () => {
         }
         selectall = true
     }
-    console.log(selectall)
 })
 
 
@@ -157,7 +149,6 @@ document.querySelector('.select_all').addEventListener('click', () => {
         const json = await res.json()
         if (json.login) {
             login = true
-            console.log(json.user_ingres)
             let recipes = []
             let ingres = []
             if (json.user_reci[0].id != null){
@@ -168,7 +159,6 @@ document.querySelector('.select_all').addEventListener('click', () => {
                     }            
                 }while(ingres.length != 4 && recipes.length != json.user_reci.length)
             }
-            console.log(json.user_reci.length)
             if (json.user_ingres[0].id != null){
                 do{
                     let num = Math.floor(Math.random()* json.user_ingres.length)
@@ -268,7 +258,6 @@ async function get_ingre() {
                     fav_ingre.push(choice.dataset.ingre_id)
                 }
             }
-            console.log(remove)
             const res = await fetch('/editfav_ingre', {
                 method: 'post',
                 headers: {

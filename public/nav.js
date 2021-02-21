@@ -4,7 +4,6 @@ let login = false
     const json = await res.json()
     if (json.login) {
         login = true
-        console.log(json.user_ingres)
         let recipes = []
         let ingres = []
         if (json.user_reci[0].id != null){
@@ -15,7 +14,6 @@ let login = false
                 }            
             }while(ingres.length != 4 && recipes.length != json.user_reci.length)
         }
-        console.log(json.user_reci.length)
         if (json.user_ingres[0].id != null){
             do{
                 let num = Math.floor(Math.random()* json.user_ingres.length)

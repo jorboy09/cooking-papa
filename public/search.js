@@ -34,39 +34,21 @@ function checkSearchItems() {
     }
 }
 
-// document.querySelector('header').addEventListener('mousemove', () => {
-//     checkSearchItems()
-// })
-
-// document.querySelector('#searchbar').addEventListener('keydown', () => {
-//     checkSearchItems()
-// })
-
 document.querySelector('#searchbar').addEventListener('change', () => {
     checkSearchItems()
 })
 
 // Dragable
 function dragstart_handler(event) {
-    // console.log("dragStart");
-    // Change the source element's background color to signify drag has started
-    // ev.currentTarget.style.border = "dashed";
-    // Add the id of the drag source element to the drag data payload so
-    // it is available when the drop event is fired
     event.dataTransfer.setData("class", event.target.className.split(' ')[0]);
     event.dataTransfer.setData('ingre_id', event.target.dataset.ingre_id)
     // Tell the browser both copy and move are possible
     event.effectAllowed = "copyMove";
 }
 function dragover_handler(event) {
-    // console.log("dragOver");
-    // Change the target element's border to signify a drag over event
-    // has occurred
-    // ev.currentTarget.style.background = "lightblue";
     event.preventDefault();
 }
 function drop_handler(event) {
-    // console.log("Drop");
     event.preventDefault();
     // Get the id of drag source element (that was added to the drag data
     // payload by the dragstart event handler)
@@ -85,15 +67,11 @@ function drop_handler(event) {
     let crosses = document.querySelectorAll('#searchbar .inSearch .ingredient .fa-times-circle')
     for (let cross of crosses) {
         cross.addEventListener('click', (event) => {
-            console.log('clicked')
             event.currentTarget.parentNode.remove()
         })
     }
 }
 function dragend_handler(event) {
-    // console.log("dragEnd");
-    // Restore source's border
-    //  event.target.style.border = "solid black";
     // Remove all of the drag data
     event.dataTransfer.clearData();
 }
@@ -120,14 +98,12 @@ document.querySelector('#editor').addEventListener('input', async () => {
         })
         const jsons = await res.json()
         for (let json of jsons) {
-            // console.log(json)
             document.querySelector('.inputSearch').innerHTML += `<div class="ingre_result" data-ingre_id='${json.id}'>${json.name_eng}</div>`
         }
     }
     const inputresults = document.querySelectorAll('.inputSearch .ingre_result')
     for (let inputresult of inputresults) {
         inputresult.addEventListener('click', async (event) => {
-            // console.log('click')
             if (document.querySelector(`.inSearch [data-ingre_id='${event.currentTarget.dataset.ingre_id}'`) == null) {
                 const res = await fetch('/findingre', {
                     method: 'post',
@@ -137,7 +113,6 @@ document.querySelector('#editor').addEventListener('input', async () => {
                     body: JSON.stringify({ ingre_id: [event.currentTarget.dataset.ingre_id] })
                 })
                 const jsons = await res.json()
-                // console.log(jsons)
                 for (let json of jsons) {
                     document.querySelector('.inSearch').innerHTML +=
                         `<div class="ingredient" data-ingre_id='${json.id}' draggable="true" ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
@@ -150,7 +125,6 @@ document.querySelector('#editor').addEventListener('input', async () => {
             let crosses = document.querySelectorAll('#searchbar .inSearch .ingredient .fa-times-circle')
             for (let cross of crosses) {
                 cross.addEventListener('click', (event) => {
-                    // console.log('clicked')
                     event.currentTarget.parentNode.remove()
                 })
             }
@@ -185,7 +159,6 @@ async function getingredients(ingredientsids) {
         body: JSON.stringify({ ingre_id: ingredientsids })
     })
     const jsons = await res.json()
-    // console.log(jsons)
     for (let json of jsons) {
         document.querySelector('.inSearch').innerHTML +=
             `<div class="ingredient" data-ingre_id='${json.id}' draggable="true" ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
@@ -194,7 +167,6 @@ async function getingredients(ingredientsids) {
     let crosses = document.querySelectorAll('#searchbar .inSearch .ingredient .fa-times-circle')
     for (let cross of crosses) {
         cross.addEventListener('click', (event) => {
-            // console.log('clicked')
             event.currentTarget.parentNode.remove()
         })
     }
@@ -209,7 +181,6 @@ async function searchrecipes(ingredientsids) {
         body: JSON.stringify({ ingre_id: ingredientsids })
     })
     const jsons = await res.json()
-    // console.log(jsons)
     for (let json in jsons) {
         document.querySelector('.recipe-container').innerHTML +=
             `<div class="individual-recipe" data-recipe_id = '${jsons[json].recipe_id.id}'>
@@ -351,7 +322,6 @@ setTimeout(() => {
                     }
                 } while (ingres.length != 4 && recipes.length != json.user_reci.length)
             }
-            console.log(json.user_reci.length)
             if (json.user_ingres[0].id != null) {
                 do {
                     let num = Math.floor(Math.random() * json.user_ingres.length)

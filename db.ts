@@ -35,15 +35,7 @@ async function main() {
     for (let quantifiers of (xlsx.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[7]])as any)){
         await client.query('insert into quantifiers (quantifiers_eng) values ($1);',[quantifiers.quantifiers_eng])
     }
-
-    // for (let ingredients of (xlsx.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]) as any)){
-    //         await client.query('UPDATE ingredients SET image = $1, created_at = NOW() WHERE name_eng = $2;',[ingredients.image, ingredients.name_eng])
-    //     }
-        
-    // const res = await client.query('select * from users')
-    // const ress = await client.query('select * from memos')
-    // console.log(res.rows)
-    // console.log(ress.rows)
+    //truncate all table
     // await client.query('truncate table ingredients;')
     // await client.query('truncate table users;')
     // await client.query('truncate table recipes;')

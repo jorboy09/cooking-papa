@@ -42,58 +42,6 @@ let login = false
         `
         }
 
-        // let isEditing = false;
-
-        // function removeButtonShow() {
-        //     const editButtons = document.querySelectorAll('main .ingredient-remove-button')
-        //     if (isEditing) {
-        //         for (const editButton of editButtons){
-        //             editButton.style.visibility= "visible";
-        //             editButton.style.opacity = 1;
-        //         }
-        //     } else {
-        //         for (const editButton of editButtons){
-        //             editButton.style.visibility= "hidden";
-        //             editButton.style.opacity = 0;
-        //         }
-        //     }    
-        // }
-        // removeButtonShow()
-
-        // Edit button
-        // document.querySelector('.edit-myIngredient').addEventListener('click', () => {
-        //     window.location = '/preferences.html'
-        //     // if (isEditing) {
-        //     //     isEditing = false;
-        //     // } else {
-        //     //     isEditing = true;
-        //     // }  
-        //     // removeButtonShow();
-        // })
-
-        // Remove button function
-        // const removeButtons = document.querySelectorAll('.ingredient-remove-button')
-
-        //         for (const removeButton of removeButtons) {
-        //             removeButton.addEventListener('click', async () => {
-        //                 const ingredientID = []
-        //                 ingredientID.push(removeButton.id.split('-')[1])
-        //                 const deleteConfirm = confirm('Really delete?')
-        //                 console.log(ingredientID)
-        //                 if (deleteConfirm) {
-        //                     await fetch('/editfav_ingre', {
-        //                         method: 'POST',
-        //                         headers: {
-        //                             'Content-Type': 'application/json'
-        //                         },
-        //                         body: JSON.stringify({ remove_fav_ingres: ingredientID })
-        //                     })
-        //                     alert('Favorite ingredient removed')
-        //                     window.location.reload()
-        //                 }
-        //             })
-        //         }
-
         // popup ingredients details insert
         const ingredients = document.querySelectorAll('.individual-ingredient .ingredient')
         const ingredientInfos = document.querySelectorAll('.ingredient-info')
@@ -242,7 +190,6 @@ function drop_handler(event) {
     let crosses = document.querySelectorAll('#searchbar .inSearch .ingredient .fa-times-circle')
     for (let cross of crosses) {
         cross.addEventListener('click', (event) => {
-            console.log('clicked')
             event.currentTarget.parentNode.remove()
         })
     }
@@ -271,14 +218,12 @@ document.querySelector('#editor').addEventListener('input', async () => {
         })
         const jsons = await res.json()
         for (let json of jsons) {
-            // console.log(json)
             document.querySelector('.inputSearch').innerHTML += `<div class="ingre_result" data-ingre_id='${json.id}'>${json.name_eng}</div>`
         }
     }
     const inputresults = document.querySelectorAll('.inputSearch .ingre_result')
     for (let inputresult of inputresults) {
         inputresult.addEventListener('click', async (event) => {
-            // console.log('click')
             if (document.querySelector(`.inSearch [data-ingre_id='${event.currentTarget.dataset.ingre_id}'`) == null) {
                 const res = await fetch('/findingre', {
                     method: 'post',
@@ -288,7 +233,6 @@ document.querySelector('#editor').addEventListener('input', async () => {
                     body: JSON.stringify({ ingre_id: [event.currentTarget.dataset.ingre_id] })
                 })
                 const jsons = await res.json()
-                // console.log(jsons)
                 for (let json of jsons) {
                     document.querySelector('.inSearch').innerHTML +=
                         `<div class="ingredient" data-ingre_id='${json.id}' draggable="true" ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);">
@@ -301,7 +245,6 @@ document.querySelector('#editor').addEventListener('input', async () => {
             let crosses = document.querySelectorAll('#searchbar .inSearch .ingredient .fa-times-circle')
             for (let cross of crosses) {
                 cross.addEventListener('click', (event) => {
-                    // console.log('clicked')
                     event.currentTarget.parentNode.remove()
                 })
             }
@@ -326,7 +269,6 @@ document.querySelector('.fa-search').addEventListener('click', () => {
         const json = await res.json()
         if (json.login) {
             login = true
-            console.log(json.user_ingres)
             let recipes = []
             let ingres = []
             if (json.user_reci[0].id != null) {
@@ -337,7 +279,6 @@ document.querySelector('.fa-search').addEventListener('click', () => {
                     }
                 } while (ingres.length != 4 && recipes.length != json.user_reci.length)
             }
-            console.log(json.user_reci.length)
             if (json.user_ingres[0].id != null) {
                 do {
                     let num = Math.floor(Math.random() * json.user_ingres.length)
